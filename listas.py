@@ -35,7 +35,6 @@ class listaSimple:
     def setTamano(self, tamano):
         self.__tamano = tamano
 
-
     def insertar(self, valor):
         nuevoNodo:nodoListaSimple = nodoListaSimple(valor)
         if self.__tamano==0:
@@ -80,7 +79,83 @@ class listaSimple:
 
 #--------------------------------------------------------------
 #AQUI SE CREARA LA ----- LISTA CIRCULAR DOBLEMENTE ENLAZADA------
+class nodoListaCircularDoble: #El nodo de la lista circular doble
+    def __init__(self, valor):
+        self.__valor = valor
+        self.__siguiente:nodoListaCircularDoble = None
+        self.__anterior:nodoListaCircularDoble = None
 
+    def getValor(self):
+        return self.__valor
+    def getSiguiente(self):
+        return self.__siguiente
+    def getAnterior(self):
+        return self.__anterior
+    def setValor(self, valor):
+        self.__valor = valor
+    def setSiguiente(self, siguiente):
+        self.__siguiente = siguiente
+    def setAnterior(self, anterior):
+        self.__anterior = anterior
+
+
+class listaCircularDoble:
+    def __init__(self):
+        self.__tamano = 0
+        self.__primero = None
+        self.__ultimo = None
+
+    def getTamano(self):
+        return self.__tamano
+    def getPrimero(self):
+        return self.__primero
+    def getUltimo(self):
+        return self.__ultimo
+    def setTamano(self, tamano):
+        self.__tamano = tamano
+    def setPrimero(self, primero):
+        self.__primero = primero
+
+    def insertar(self, valor):
+        nuevoNodo:nodoListaCircularDoble=nodoListaCircularDoble(valor)
+        if self.__tamano == 0:
+            self.__primero = nuevoNodo
+            self.__ultimo = nuevoNodo
+            nuevoNodo.setSiguiente(nuevoNodo)
+            nuevoNodo.setAnterior(nuevoNodo)
+        else:
+            self.__ultimo.setSiguiente(nuevoNodo)
+            nuevoNodo.setAnterior(self.__ultimo)
+            nuevoNodo.setSiguiente(self.__primero)
+            self.__primero.setAnterior(nuevoNodo)
+            self.__ultimo = nuevoNodo #Solo es para actualizar el valor de la lista
+        self.__tamano += 1
+        self.ordenar() #Ordeno después de arreglar cada cosa
+
+    def encontrar(self, pos):
+        if pos<0 or pos>=self.__tamano: print("Posición no válida")
+
+        aux:nodoListaCircularDoble = self.__primero
+        for i in range(pos):
+            aux = aux.getSiguiente()
+        return aux.getValor()
+
+    def ordenar(self):#ordenadno de forma descendente
+        if (self.__primero==None or self.__ultimo==None): return
+        else:
+            aux:nodoListaCircularDoble = self.__primero
+            while aux.getSiguiente() != self.__primero:
+                aux2:nodoListaCircularDoble = aux.getSiguiente()
+                while aux2 != self.__primero:
+                    if aux.getValor() > aux2.getValor():
+                        otroAux:nodoListaCircularDoble=aux
+                        aux.setValor(aux2.getValor())
+                        aux2.setValor(otroAux.getValor())
+                    aux2 = aux2.getSiguiente()
+                aux = aux.getSiguiente()
+
+#----------------------------------------------------------------
+#Area de pruebas de las listas
 
 
 

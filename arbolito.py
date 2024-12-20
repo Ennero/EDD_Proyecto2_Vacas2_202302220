@@ -1,20 +1,23 @@
+import math
 from nodoArbol import NodoArbol
 
 class ArbolB:
-    def __init__(self, orden: int): 
+    #Constructor del arbol
+    def __init__(self, orden: int=5): 
         self.raiz: NodoArbol = NodoArbol(True)
-        self.orden: int = orden
+        self.orden: int = orden #El número máximo de hijos que puede tener
     
+    #Metodo para insertar un valor en el arbol
     def insertarClavecita(self, valor: int):
-        raiz: NodoArbol = self.raiz
-        if len(raiz.claves) == self.orden - 1:  
-            nodo: NodoArbol = NodoArbol(False)
-            self.raiz = nodo
-            nodo.hijos.insert(0, raiz)
-            self.dividirNodo(nodo, 0)
-            self.insertarValorNoCompleto(nodo, valor)
+        raiz: NodoArbol = self.raiz #Creo una copia del nodo raiz
+        if len(raiz.claves) == self.orden - 1: #Si el nodo raiz esta lleno
+            nodo: NodoArbol = NodoArbol() #Creo un nuevo nodo
+            self.raiz = nodo #El nuevo nodo sera la raiz
+            nodo.hijos.insert(0, raiz) #El nodo raiz sera el hijo del nuevo nodo
+            self.dividirNodo(nodo, 0) #Divido el nodo raiz
+            self.insertarValorNoCompleto(nodo, valor) #Inserto el valor en el nodo
         else:
-            self.insertarValorNoCompleto(raiz, valor)
+            self.insertarValorNoCompleto(raiz, valor) #Inserto el valor en el nodo sin dividir la raiz
             
     def insertarValorNoCompleto(self, raiz: NodoArbol, valor: int):
         i: int = len(raiz.claves) - 1 
@@ -25,11 +28,15 @@ class ArbolB:
                 raiz.claves[i + 1] = raiz.claves[i]
                 i -= 1
             raiz.claves[i + 1] = valor
+
+
         else:
             while i >= 0 and valor < raiz.claves[i]:
                 i -= 1
             i += 1
             if len(raiz.hijos[i].claves) == self.orden - 1:
+
+                
                 self.dividirNodo(raiz, i)
                 if valor > raiz.claves[i]:
                     i += 1
@@ -37,11 +44,13 @@ class ArbolB:
             
     def dividirNodo(self, raiz: NodoArbol, pos: int):
         orden: int = self.orden
-        hijo: NodoArbol = raiz.hijos[pos]
+        hijo: NodoArbol = raiz.hijos[pos] #
         nodo: NodoArbol = NodoArbol(hijo.hoja)
 
         raiz.hijos.insert(pos + 1, nodo)
         raiz.claves.insert(pos, hijo.claves[(orden - 1) // 2])
+
+
 
         nodo.claves = hijo.claves[(orden - 1) // 2 + 1:]
         hijo.claves = hijo.claves[: (orden - 1) // 2]
@@ -52,40 +61,38 @@ class ArbolB:
 
     def imprimirUsuario(self):
         grafica: str = "digraph G {\nnode [shape=record];\n"
-        grafica += self.imprimir(self.raiz)
+        grafica += self.imprimir(self.raiz,0)
+        
         grafica += "\n}"
         return grafica
 
-    def imprimir(self, nodo: NodoArbol, id: int=0):
-
+    def imprimir(self, nodo: NodoArbol, id:int):
         if nodo is None:
-            return
+            return ""
 
-        raiz: NodoArbol = nodo
+
         grafica: str = f"nodo{id} [label=\""
 
         i: int = 0
-        for clave in raiz.claves:
-            if (i == len(raiz.claves) - 1):
-                grafica += f"<f{i}> |{clave}|"
-                break
-            grafica += f"<f{i}> |{clave}|"
 
+        while i < len(nodo.claves):
+            if (i==0):
+                grafica += f"<f{i}>"
+            grafica+= f"|{nodo.claves[i]}|<f{i+1}>"
             i += 1
-        grafica += f"];\n\t"
 
-        j: int = 0
-        for hijo in raiz.hijos:
-            padreId: int = id
-            grafica += f"nodo{padreId}:f{j} -> nodo{id + 1};\n\t"
-            id += 1
-            grafica += self.imprimir(hijo, id)
+        grafica += f"\"];\n\t"
 
 
-
-
-
-
+        siguienteId: int = id+1
+        i=0
+        while i<len(nodo.hijos):
+            hijo=nodo.hijos[i]
+            if hijo is not None:
+                grafica += f"nodo{id}:f{i} -> nodo{siguienteId};\n"
+                grafica += self.imprimir(hijo, siguienteId)
+                siguienteId += len(hijo.hijos) if hijo.hijos else 1
+            i += 1
         return grafica
 
     def __str__(self):
