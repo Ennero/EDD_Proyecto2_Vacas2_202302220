@@ -1,10 +1,46 @@
 from arbolito import ArbolB
 import clases
+import graphviz
 
 
 cliente=clases.Cliente(3,"jksjkd","sfksjdf","sdkjfkls",2,"ksdjfsklf")
 
 print(cliente.getNombre())
+
+
+arbolB: ArbolB=ArbolB(5)
+arbolB.insertarValor(5)
+arbolB.insertarValor(6)
+arbolB.insertarValor(4)
+arbolB.insertarValor(2)
+arbolB.insertarValor(45)
+arbolB.insertarValor(45)
+arbolB.insertarValor(34)
+arbolB.insertarValor(3)
+arbolB.insertarValor(1)
+arbolB.insertarValor(12)
+arbolB.insertarValor(0)
+arbolB.insertarValor(7)
+arbolB.insertarValor(8)
+arbolB.insertarValor(9)
+arbolB.insertarValor(10)
+arbolB.insertarValor(11)
+arbolB.insertarValor(13)
+arbolB.insertarValor(14)
+
+arbolB.generarGrafica("ArbolB")
+
+'''grafiquita: str = arbolB.imprimirUsuario()
+graph = graphviz.Source(grafiquita)
+graph.render('ArbolB', format='pdf', view=True)'''
+
+
+
+
+
+
+
+
 
 '''arbolB: ArbolB=ArbolB(5)
 arbolB.insertarClavecita(5)

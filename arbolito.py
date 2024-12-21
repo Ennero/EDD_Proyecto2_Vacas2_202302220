@@ -1,99 +1,102 @@
-import math
 from nodoArbol import NodoArbol
+from graphviz import Digraph
 
 class ArbolB:
-    #Constructor del arbol
-    def __init__(self, orden: int=5): 
+    def __init__(self, orden: int):
+        self.orden: int = orden
         self.raiz: NodoArbol = NodoArbol(True)
-        self.orden: int = orden #El número máximo de hijos que puede tener
-    
-    #Metodo para insertar un valor en el arbol
-    def insertarClavecita(self, valor: int):
-        raiz: NodoArbol = self.raiz #Creo una copia del nodo raiz
-        if len(raiz.claves) == self.orden - 1: #Si el nodo raiz esta lleno
-            nodo: NodoArbol = NodoArbol() #Creo un nuevo nodo
-            self.raiz = nodo #El nuevo nodo sera la raiz
-            nodo.hijos.insert(0, raiz) #El nodo raiz sera el hijo del nuevo nodo
-            self.dividirNodo(nodo, 0) #Divido el nodo raiz
-            self.insertarValorNoCompleto(nodo, valor) #Inserto el valor en el nodo
-        else:
-            self.insertarValorNoCompleto(raiz, valor) #Inserto el valor en el nodo sin dividir la raiz
-            
+
+    def insertarValor(self, valor: int):
+        raiz: NodoArbol = self.raiz
+
+        self.insertarValorNoCompleto(raiz, valor)
+
+        if (len(raiz.claves) > self.orden - 1):
+            nodo: NodoArbol = NodoArbol()
+            self.raiz = nodo
+            nodo.hijos.insert(0, raiz)
+            self.dividirNodo(nodo, 0)
+
+
     def insertarValorNoCompleto(self, raiz: NodoArbol, valor: int):
-        i: int = len(raiz.claves) - 1 
+        posicion: int = len(raiz.claves) - 1
 
         if raiz.hoja:
+            #Inserto el valor en la página hoja
             raiz.claves.append(None)
-            while i >= 0 and valor < raiz.claves[i]:
-                raiz.claves[i + 1] = raiz.claves[i]
-                i -= 1
-            raiz.claves[i + 1] = valor
+            
+            while posicion >= 0 and valor < raiz.claves[posicion]:
+                raiz.claves[posicion + 1] = raiz.claves[posicion]
+                posicion -= 1
 
+            raiz.claves[posicion + 1] = valor
 
         else:
-            while i >= 0 and valor < raiz.claves[i]:
-                i -= 1
-            i += 1
-            if len(raiz.hijos[i].claves) == self.orden - 1:
 
-                
-                self.dividirNodo(raiz, i)
-                if valor > raiz.claves[i]:
-                    i += 1
-            self.insertarValorNoCompleto(raiz.hijos[i], valor)
-            
-    def dividirNodo(self, raiz: NodoArbol, pos: int):
-        orden: int = self.orden
-        hijo: NodoArbol = raiz.hijos[pos] #
+            while posicion >=0 and valor < raiz.claves[posicion]:
+                posicion -= 1
+
+            posicion += 1
+
+            self.insertarValorNoCompleto(raiz.hijos[posicion], valor)
+
+            if len(raiz.hijos[posicion].claves) > self.orden - 1:
+                self.dividirNodo(raiz, posicion)
+
+    def dividirNodo(self, raiz: NodoArbol, posicion: int):
+        posicionMedia: int = int((self.orden - 1) / 2)
+
+        hijo: NodoArbol = raiz.hijos[posicion]
+
         nodo: NodoArbol = NodoArbol(hijo.hoja)
+        raiz.hijos.insert(posicion + 1, nodo)
 
-        raiz.hijos.insert(pos + 1, nodo)
-        raiz.claves.insert(pos, hijo.claves[(orden - 1) // 2])
+        raiz.claves.insert(posicion, hijo.claves[posicionMedia])
 
-
-
-        nodo.claves = hijo.claves[(orden - 1) // 2 + 1:]
-        hijo.claves = hijo.claves[: (orden - 1) // 2]
+        nodo.claves = hijo.claves[posicionMedia + 1:posicionMedia * 2 + 1]
+        hijo.claves = hijo.claves[0:posicionMedia]
 
         if not hijo.hoja:
-            nodo.hijos = hijo.hijos[(orden - 1) // 2 + 1:]
-            hijo.hijos = hijo.hijos[: (orden - 1) // 2 + 1]
+            nodo.hijos = hijo.hijos[posicionMedia + 1:posicionMedia * 2 + 2]
+            hijo.hijos = hijo.hijos[0:posicionMedia + 1]
+    
 
-    def imprimirUsuario(self):
-        grafica: str = "digraph G {\nnode [shape=record];\n"
-        grafica += self.imprimir(self.raiz,0)
+#-----------------------------------------------------
+#GENERACIÓN DE LA GRAFICA
+
+    #Función para generar el id único del nodito del arbol
+    def crearIdNodo(self):
+        #Contador interno
+        self._counter += 1
+        return f'node{self._counter}'
+
+    #Función para visualizar el nodo del arbol
+    def crearNodo(self, nodo: NodoArbol, nodo_id: str, grafica: Digraph):
+        claves = '|'.join(str(k) for k in nodo.claves) #Uno las claves con un |
+        #Creo el nodo en el grafo
+        grafica.node(nodo_id, claves) 
         
-        grafica += "\n}"
-        return grafica
+        #Si el nodo tiene hijos, lo recorro recursivamente
+        if not nodo.hoja:
+            for i, hijo in enumerate(nodo.hijos):
+                hijo_id = self.crearIdNodo()
+                self.crearNodo(hijo, hijo_id, grafica)
+                grafica.edge(nodo_id, hijo_id)
 
-    def imprimir(self, nodo: NodoArbol, id:int):
-        if nodo is None:
-            return ""
-
-
-        grafica: str = f"nodo{id} [label=\""
-
-        i: int = 0
-
-        while i < len(nodo.claves):
-            if (i==0):
-                grafica += f"<f{i}>"
-            grafica+= f"|{nodo.claves[i]}|<f{i+1}>"
-            i += 1
-
-        grafica += f"\"];\n\t"
-
-
-        siguienteId: int = id+1
-        i=0
-        while i<len(nodo.hijos):
-            hijo=nodo.hijos[i]
-            if hijo is not None:
-                grafica += f"nodo{id}:f{i} -> nodo{siguienteId};\n"
-                grafica += self.imprimir(hijo, siguienteId)
-                siguienteId += len(hijo.hijos) if hijo.hijos else 1
-            i += 1
-        return grafica
-
-    def __str__(self):
-        return f"{self.raiz}"
+    #Función para generar la gráfica del arbol
+    def generarGrafica(self, nombre='ReporteArbolB'):
+        #Reinicia el contador de IDs
+        self._counter = 0
+        
+        # Inicializar el Digraph
+        grafica = Digraph(comment='Árbol B')
+        grafica.attr(rankdir='TB')
+        grafica.attr('node', shape='record')
+        
+        #Genera todo a partir de la raiz
+        raiz_id = self.crearIdNodo()
+        self.crearNodo(self.raiz, raiz_id, grafica)
+        
+        #Generar el PDF
+        grafica.render(nombre, view=True, cleanup=True)
+        print(f"Reporte del arbolB generado exitosamente: {nombre}.pdf")

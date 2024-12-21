@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import PhotoImage
 from tkinter import filedialog
+from PIL import Image, ImageTk
 import subprocess
 
 #Declarando mis variables globales
@@ -59,12 +60,49 @@ edittxt=tk.Label(frame1, text="RUTAS")
 edittxt.pack()
 edittxt.config(foreground="black", font=("Arial", 14, "bold"))
 
+#Imagen de la grafica
+try:
+    imagenRutas = Image.open("C:/banderas/nono.png")
+
+    anchoImagen, altoImagen = imagenRutas.size
+    anchoCanvas, altoCanvas = 700, 500
+    imagen_tk = ImageTk.PhotoImage(imagenRutas)
+
+    #Cálculo para para redimensionar la imagen
+    proporcionImagen=anchoImagen/altoImagen
+    proporcionCanvas=anchoCanvas/altoCanvas
+
+    if proporcionImagen>proporcionCanvas:
+        nuevoAncho=anchoCanvas
+        nuevoAlto=int(anchoCanvas/proporcionImagen)
+    else:
+        nuevoAlto=altoCanvas
+        nuevoAncho=int(altoCanvas*proporcionImagen)
+
+    imagenRutas=imagenRutas.resize((nuevoAncho,nuevoAlto), Image.LANCZOS)
+    imgencita=imagen_tk.PhototImage(imagenRutas)
+
+    canvas = tk.Canvas(frame1, width=anchoCanvas, height=altoCanvas)
+    canvas.pack()
+
+    x=(anchoCanvas-nuevoAncho)//2
+    y=(altoCanvas-nuevoAlto)//2
+
+    #Coloco la imagen en el canvas
+    canvas.create_image(x, y, anchor=tk.CENTER, image=imagen_tk)
+
+except FileNotFoundError:
+    print("Error: La imagen no se encontró.")
+except Exception as e:
+    print(f"Ocurrió un error: {e}")
+    exit()
+
 
 
 #Creo el botón para enviar la información
 frameIngresoRutas = tk.Frame(frame1)
 frameIngresoRutas.pack(anchor=tk.CENTER)
-botonRutas=tk.Button(frameIngresoRutas, text="Cargar Rutas",height="1", width="8", command=cargarRutas)
+botonRutas=tk.Button(frameIngresoRutas, text="Cargar Rutas",height="1", width="10", command=cargarRutas)
 botonRutas.pack()
 botonRutas.config(background="white", foreground="blue", font=("Arial", 14, "bold"))
 

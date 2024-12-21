@@ -5,5 +5,4 @@ class NodoArbol:
         self.claves: list[int] = [] #Lista de claves (será de tipo vehículo)
         self.hijos: list[NodoArbol] = [] #Lista de hijos (será de tipo NodoArbol)
     
-    def __str__(self):
-        return f"Hoja: {self.hoja}, Claves: {self.claves}, Hijos: {self.hijos}"
+
