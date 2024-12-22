@@ -73,7 +73,35 @@ def cargaMasivaClientes():
         messagebox.showerror("Error", "No se pudo abrir el archivo.")
 
 def cargaMasivaVehículos():
-    
+    ruta=filedialog.askopenfilename(title="Cargar Vehículos", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
+    if ruta!="":
+        try:
+            with open(ruta, "r", encoding="utf-8") as archivo: #Abro el archivo
+                vehiculos=archivo.read() #Leo el archivo y lo paso a string
+
+        except FileNotFoundError:
+            messagebox.showerror("Error", "El archivo no se encontró o no se pudo abrir.")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo abrir el archivo: {str(e)}")
+        #                  651CVD:     Marca:     Modelo:    precio   
+        patronUsuario=r'\s*(.{6}):\s*([A-Za-z]+):\s*(.+):\s*([A-Za-z]+)'
+
+        #Ciclo para ir separando los clientes
+        print(vehiculos)
+        
+        vehiculitos=vehiculos.split(";")
+        print("Se hizo split------------------------------------")
+        for vehiculo in vehiculitos:
+            print(vehiculo)
+            datos=re.search(patronUsuario, vehiculo)
+            if datos:
+                print(f"Usuario: {datos.group(1)} {datos.group(2)} {datos.group(3)} {datos.group(4)}")
+                #Instancio al cliente y lo inserto en la lista circular
+                vehiculete:clases.Cliente=clases.Cliente(datos.group(1), datos.group(2), datos.group(3), datos.group(4))
+                vehículos.insertarValor(vehiculete)
+    else:
+        print("No se pudo abrir el archivo")
+        messagebox.showerror("Error", "No se pudo abrir el archivo.")
 
 
 

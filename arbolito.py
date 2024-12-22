@@ -1,12 +1,13 @@
 from nodoArbol import NodoArbol
 from graphviz import Digraph
+from clases import Vehiculo
 
 class ArbolB:
     def __init__(self, orden: int):
         self.orden: int = orden
         self.raiz: NodoArbol = NodoArbol(True)
 
-    def insertarValor(self, valor: int):
+    def insertarValor(self, valor: Vehiculo):
         raiz: NodoArbol = self.raiz
 
         self.insertarValorNoCompleto(raiz, valor)
@@ -18,14 +19,14 @@ class ArbolB:
             self.dividirNodo(nodo, 0)
 
 
-    def insertarValorNoCompleto(self, raiz: NodoArbol, valor: int):
+    def insertarValorNoCompleto(self, raiz: NodoArbol, valor: Vehiculo):
         posicion: int = len(raiz.claves) - 1
 
         if raiz.hoja:
             #Inserto el valor en la página hoja
             raiz.claves.append(None)
             
-            while posicion >= 0 and valor < raiz.claves[posicion]:
+            while posicion >= 0 and valor.getPlaca() < raiz.claves[posicion].getPlaca():
                 raiz.claves[posicion + 1] = raiz.claves[posicion]
                 posicion -= 1
 
@@ -33,7 +34,7 @@ class ArbolB:
 
         else:
 
-            while posicion >=0 and valor < raiz.claves[posicion]:
+            while posicion >=0 and valor.getPlaca() < raiz.claves[posicion].getPlaca():
                 posicion -= 1
 
             posicion += 1
