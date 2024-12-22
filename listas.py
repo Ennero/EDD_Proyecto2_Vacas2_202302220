@@ -1,9 +1,11 @@
+from clases import Cliente, Vehiculo, Viaje
+
 
 #--------------------------------------------------------------
 #AQUÍ SE CREARA LA ----- LISTA SIMPLE------
 class nodoListaSimple: #El nodo de la lista simple
     def __init__(self, valor):
-        self.__valor = valor
+        self.__valor:Viaje = valor
         self.__siguiente:nodoListaSimple = None
 
     def getValor(self):
@@ -81,7 +83,7 @@ class listaSimple:
 #AQUI SE CREARA LA ----- LISTA CIRCULAR DOBLEMENTE ENLAZADA------
 class nodoListaCircularDoble: #El nodo de la lista circular doble
     def __init__(self, valor):
-        self.__valor = valor
+        self.__valor:Cliente = valor
         self.__siguiente:nodoListaCircularDoble = None
         self.__anterior:nodoListaCircularDoble = None
 
@@ -91,7 +93,7 @@ class nodoListaCircularDoble: #El nodo de la lista circular doble
         return self.__siguiente
     def getAnterior(self):
         return self.__anterior
-    def setValor(self, valor):
+    def setValor(self, valor:Cliente):
         self.__valor = valor
     def setSiguiente(self, siguiente):
         self.__siguiente = siguiente
@@ -102,8 +104,8 @@ class nodoListaCircularDoble: #El nodo de la lista circular doble
 class listaCircularDoble:
     def __init__(self):
         self.__tamano = 0
-        self.__primero = None
-        self.__ultimo = None
+        self.__primero:nodoListaCircularDoble = None
+        self.__ultimo:nodoListaCircularDoble = None
 
     def getTamano(self):
         return self.__tamano
@@ -111,12 +113,12 @@ class listaCircularDoble:
         return self.__primero
     def getUltimo(self):
         return self.__ultimo
-    def setTamano(self, tamano):
+    def setTamano(self, tamano:int):
         self.__tamano = tamano
-    def setPrimero(self, primero):
+    def setPrimero(self, primero:nodoListaCircularDoble):
         self.__primero = primero
 
-    def insertar(self, valor):
+    def insertar(self, valor:Cliente):
         nuevoNodo:nodoListaCircularDoble=nodoListaCircularDoble(valor)
         if self.__tamano == 0:
             self.__primero = nuevoNodo
@@ -132,7 +134,7 @@ class listaCircularDoble:
         self.__tamano += 1
         self.ordenar() #Ordeno después de arreglar cada cosa
 
-    def encontrar(self, pos):
+    def encontrar(self, pos:int):
         if pos<0 or pos>=self.__tamano: print("Posición no válida")
 
         aux:nodoListaCircularDoble = self.__primero
@@ -147,7 +149,7 @@ class listaCircularDoble:
             while aux.getSiguiente() != self.__primero:
                 aux2:nodoListaCircularDoble = aux.getSiguiente()
                 while aux2 != self.__primero:
-                    if aux.getValor() > aux2.getValor():
+                    if aux.getValor().getDPI() > aux2.getValor().getDPI():
                         otroAux:nodoListaCircularDoble=aux
                         aux.setValor(aux2.getValor())
                         aux2.setValor(otroAux.getValor())

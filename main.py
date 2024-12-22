@@ -1,14 +1,18 @@
 from arbolito import ArbolB
+from listas import listaCircularDoble, listaSimple
 import clases
 import graphviz
+import interfaz
+
+'''#Inicializo las estructuras
+vehículos: ArbolB=ArbolB(5)
+clientes: listaCircularDoble =listaCircularDoble()
+viajes: listaSimple = listaSimple()
+
+'''
 
 
-cliente=clases.Cliente(3,"jksjkd","sfksjdf","sdkjfkls",2,"ksdjfsklf")
-
-print(cliente.getNombre())
-
-
-arbolB: ArbolB=ArbolB(5)
+'''arbolB: ArbolB=ArbolB(5)
 arbolB.insertarValor(5)
 arbolB.insertarValor(6)
 arbolB.insertarValor(4)
@@ -26,9 +30,9 @@ arbolB.insertarValor(9)
 arbolB.insertarValor(10)
 arbolB.insertarValor(11)
 arbolB.insertarValor(13)
-arbolB.insertarValor(14)
+arbolB.insertarValor(14)'''
 
-arbolB.generarGrafica("ArbolB")
+#arbolB.generarGrafica("ArbolB")
 
 '''grafiquita: str = arbolB.imprimirUsuario()
 graph = graphviz.Source(grafiquita)

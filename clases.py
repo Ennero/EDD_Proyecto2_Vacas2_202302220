@@ -4,7 +4,7 @@
 
 #Estos se almacenarán dentro de una lista circular doblmente enlazada que se auto-ordenará por el DPI
 class Cliente:
-    def __init__(self,dpi:int, nombre:str, apellido:str,genero:str,telefono:int,direccion:str):
+    def __init__(self,dpi:str, nombre:str, apellido:str,genero:str,telefono:str,direccion:str):
         self.__dpi=dpi
         self.__nombre = nombre
         self.__apellido=apellido
@@ -30,7 +30,7 @@ class Cliente:
     def getDireccion(self):
         return self.__direccion
     
-    def setDPI(self,dpi:int):
+    def setDPI(self,dpi:str):
         self.__dpi=dpi
 
     def setNombre(self,nombre:str):
@@ -42,7 +42,7 @@ class Cliente:
     def setGenero(self,genero:str):
         self.__genero=genero
 
-    def setTelefono(self,telefono:int):
+    def setTelefono(self,telefono:str):
         self.__telefono=telefono
 
     def setDireccion(self,direccion:str):

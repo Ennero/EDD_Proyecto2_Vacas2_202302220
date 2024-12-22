@@ -1,13 +1,24 @@
 import tkinter as tk
 from tkinter import messagebox
-from tkinter import PhotoImage
 from tkinter import filedialog
 from PIL import Image, ImageTk
 import subprocess
+import re
+from arbolito import ArbolB
+from listas import listaCircularDoble, listaSimple
+import clases
+
+
+#Inicializo las estructuras
+vehículos: ArbolB=ArbolB(5)
+clientes: listaCircularDoble =listaCircularDoble()
+viajes: listaSimple = listaSimple()
+
+
 
 #Declarando mis variables globales
-rutaGrafica="C:/banderas/nono.png"
-
+rutaGrafica:str="C:/banderas/nono.png"
+usuarios:str=""
 
 def acerca_de(): #Función para mostrar la información del autor (la mia)
     messagebox.showinfo("Acerca de","Nombre: Enner Esaí Mendizabal Castro\nCarné: 202302220\nCurso: Estructura de Datos\nSección: A")
@@ -27,6 +38,55 @@ def analizar(): #Función para analizar el texto del editor
 
 def cargarRutas():
     pass
+
+#Funciones de carga masiva de datos-----------------------------------------------------------------------------------------------------------
+#Función para la carga masiva de clientes
+def cargaMasivaClientes():
+    ruta=filedialog.askopenfilename(title="Cargar Clientes", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
+    if ruta!="":
+        try:
+            with open(ruta, "r", encoding="utf-8") as archivo: #Abro el archivo
+                usuarios=archivo.read() #Leo el archivo y lo paso a string
+
+        except FileNotFoundError:
+            messagebox.showerror("Error", "El archivo no se encontró o no se pudo abrir.")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo abrir el archivo: {str(e)}")
+        #                1234567879012,  Nombre1,    Nombre2       Apellido1   Apellido2      Genero     44456654   2da calle 25-50 zona 1;
+        patronUsuario=r'\s*(\d{12}),\s*([A-Za-z]+\s*[A-Za-z]*),\s*([A-Za-z]+\s*[A-Za-z]*),\s*([A-Za-z]+),\s*(\d*),\s*(.+)'
+
+        #Ciclo para ir separando los clientes
+        print(usuarios)
+        
+        clientesitos=usuarios.split(";")
+        print("Se hizo split------------------------------------")
+        for cliente in clientesitos:
+            print(cliente)
+            datos=re.search(patronUsuario, cliente)
+            if datos:
+                print(f"Usuario: {datos.group(1)} {datos.group(2)} {datos.group(3)} {datos.group(4)} {datos.group(5)} {datos.group(6)}")
+                #Instancio al cliente y lo inserto en la lista circular
+                clintete:clases.Cliente=clases.Cliente(datos.group(1), datos.group(2), datos.group(3), datos.group(4), datos.group(5), datos.group(6))
+                clientes.insertar(clintete)
+    else:
+        print("No se pudo abrir el archivo")
+        messagebox.showerror("Error", "No se pudo abrir el archivo.")
+
+def cargaMasivaVehículos():
+    
+
+
+
+
+
+    pass
+
+
+
+
+
+
+
 
     
 #INTEFAZ GRÁFICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
@@ -61,41 +121,7 @@ edittxt.pack()
 edittxt.config(foreground="black", font=("Arial", 14, "bold"))
 
 #Imagen de la grafica
-try:
-    imagenRutas = Image.open("C:/banderas/nono.png")
 
-    anchoImagen, altoImagen = imagenRutas.size
-    anchoCanvas, altoCanvas = 700, 500
-    imagen_tk = ImageTk.PhotoImage(imagenRutas)
-
-    #Cálculo para para redimensionar la imagen
-    proporcionImagen=anchoImagen/altoImagen
-    proporcionCanvas=anchoCanvas/altoCanvas
-
-    if proporcionImagen>proporcionCanvas:
-        nuevoAncho=anchoCanvas
-        nuevoAlto=int(anchoCanvas/proporcionImagen)
-    else:
-        nuevoAlto=altoCanvas
-        nuevoAncho=int(altoCanvas*proporcionImagen)
-
-    imagenRutas=imagenRutas.resize((nuevoAncho,nuevoAlto), Image.LANCZOS)
-    imgencita=imagen_tk.PhototImage(imagenRutas)
-
-    canvas = tk.Canvas(frame1, width=anchoCanvas, height=altoCanvas)
-    canvas.pack()
-
-    x=(anchoCanvas-nuevoAncho)//2
-    y=(altoCanvas-nuevoAlto)//2
-
-    #Coloco la imagen en el canvas
-    canvas.create_image(x, y, anchor=tk.CENTER, image=imagen_tk)
-
-except FileNotFoundError:
-    print("Error: La imagen no se encontró.")
-except Exception as e:
-    print(f"Ocurrió un error: {e}")
-    exit()
 
 
 
@@ -190,8 +216,13 @@ guardoComo.config(background="white", foreground="black", font=("Arial", 10, "bo
 #----------------------------------------------------------------------------
 #Creo la barra
 barra=tk.Menu(ventana)
+carga=tk.Menu(barra, tearoff=0)
+carga.add_command(label="Cargar Clientes", command=cargaMasivaClientes)
+carga.add_command(label="Cargar Vehículos", command=cargarRutas)
+
 
 # Agregar acerca de y salir
+barra.add_cascade(label="Carga Masiva", menu=carga)
 barra.add_command(label="Acerca de", command=acerca_de)
 barra.add_command(label="Salir", command=ventana.quit)
 
