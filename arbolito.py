@@ -73,7 +73,7 @@ class ArbolB:
 
     #Función para visualizar el nodo del arbol
     def crearNodo(self, nodo: NodoArbol, nodo_id: str, grafica: Digraph):
-        claves = '|'.join(str(k) for k in nodo.claves) #Uno las claves con un |
+        claves = '|'.join(str(k.getPlaca) for k in nodo.claves) #Uno las claves con un |
         #Creo el nodo en el grafo
         grafica.node(nodo_id, claves) 
         

@@ -156,6 +156,30 @@ class listaCircularDoble:
                     aux2 = aux2.getSiguiente()
                 aux = aux.getSiguiente()
 
+    #Función para encontrar un cliente en la lista por su dpi
+    def encontrarCliente(self, dpi:str):
+        aux:nodoListaCircularDoble = self.__primero
+        while aux != self.__ultimo:
+            if aux.getValor().getDPI() == dpi:
+                return aux.getValor()
+            
+    #Función para eliminar al cliente de la lista
+    def eliminarCliente(self, dpi:str):
+        aux:nodoListaCircularDoble=self.encontrarCliente(dpi)
+        if aux == None: return
+        if aux == self.__primero:
+            self.__primero = aux.getSiguiente()
+            self.__primero.setAnterior(self.__ultimo)
+            self.__ultimo.setSiguiente(self.__primero)
+        elif aux == self.__ultimo:
+            self.__ultimo = aux.getAnterior()
+            self.__ultimo.setSiguiente(self.__primero)
+            self.__primero.setAnterior(self.__ultimo)
+        else:
+            aux.getAnterior().setSiguiente(aux.getSiguiente())
+            aux.getSiguiente().setAnterior(aux.getAnterior())
+
+
 #----------------------------------------------------------------
 #Area de pruebas de las listas
 
