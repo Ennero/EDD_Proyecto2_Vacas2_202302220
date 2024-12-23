@@ -117,7 +117,8 @@ class Ruta:
 
 #va a estar almacenado en una lista circular simple
 class Viaje:
-    def __init__(self, origen:str,destino:str, fechaHoraInicio:str, cliente:Cliente, vehiculo:Vehiculo, ruta:Ruta):
+    def __init__(self,origen:str,destino:str, fechaHoraInicio:str, cliente:Cliente, vehiculo:Vehiculo, ruta:Ruta):
+        self.id=9999 #Este id se generará automáticamente
         self.origen=origen
         self.destino=destino
         self.fechaHoraInicio=fechaHoraInicio
@@ -125,6 +126,9 @@ class Viaje:
         self.vehiculo=vehiculo
         self.ruta=ruta #En realidad debe ser la lista de las rutas cortas que tengo que hacer (es simple)
     #getters y setters
+    def getId(self):
+        return self.id
+
     def getOrigen(self):
         return self.origen
     
@@ -142,6 +146,9 @@ class Viaje:
     
     def getRuta(self):
         return self.ruta
+    
+    def setId(self,id:int):
+        self.id=id
     
     def setOrigen(self,origen:str):
         self.origen=origen

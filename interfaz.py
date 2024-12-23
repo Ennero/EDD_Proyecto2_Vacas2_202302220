@@ -155,6 +155,10 @@ def crearViaje():
 #Funciones para eliminar----------------------------------------------------------------
 def eliminarCliente():
     mostrarClientes()
+    if clientes.getTamano==0:
+        messagebox.showerror("Error", "No hay clientes para eliminar.")
+        info.config(text="Error al eliminar el cliente", foreground="red", font=("Arial", 9, "italic"))
+        return
     dpi=simpledialog.askstring("Eliminación de cliente", "Ingrese el DPI del cliente a eliminar:",parent=ventana)
     if dpi==None:
         messagebox.showerror("Error", "No se pudo eliminar el cliente.")
@@ -215,7 +219,6 @@ def modificarCliente():
             info.config(text="Cliente modificado correctamente", foreground="green", font=("Arial", 9, "italic"))
             messagebox.showinfo("Modificación de cliente", "Cliente modificado correctamente.")
 
-
 def modificarVehículo():
     mostrarVehículos()
     if vehículos.raiz==None:
@@ -263,7 +266,6 @@ def mostrarVehículos():
     entrada.insert(tk.END, mostrar)
     print(mostrar)
     entrada.config(state=tk.DISABLED)
-
 #Fin de funciones para mostrar información------------------------------------------------
 
 #Funciones para mostrar estructura de datos------------------------------------------------

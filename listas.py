@@ -12,17 +12,17 @@ class nodoListaSimple: #El nodo de la lista simple
         return self.__valor
     def getSiguiente(self):
         return self.__siguiente
-    def setValor(self, valor):
+    def setValor(self, valor:Viaje):
         self.__valor = valor
     def setSiguiente(self, siguiente):
         self.__siguiente = siguiente
 
 
 class listaSimple:
-    def __init__(self, inicio = None, fin = None, tamano = 0):
-        self.__inicio = inicio
-        self.__fin = fin
-        self.__tamano = tamano
+    def __init__(self, inicio:nodoListaSimple = None, fin:nodoListaSimple = None, tamano:int = 0):
+        self.__inicio:nodoListaSimple = inicio
+        self.__fin:nodoListaSimple = fin
+        self.__tamano:int = tamano
     
     def getInicio(self):
         return self.__inicio
@@ -30,38 +30,46 @@ class listaSimple:
         return self.__fin
     def getTamano(self):
         return self.__tamano
-    def setInicio(self, inicio):
+    def setInicio(self, inicio:nodoListaSimple):
         self.__inicio = inicio
-    def setFin(self, fin):
+    def setFin(self, fin:nodoListaSimple):
         self.__fin = fin
-    def setTamano(self, tamano):
+    def setTamano(self, tamano:int):
         self.__tamano = tamano
 
-    def insertar(self, valor):
+    def insertar(self, valor:Viaje):
         nuevoNodo:nodoListaSimple = nodoListaSimple(valor)
         if self.__tamano==0:
+            nuevoNodo.getValor().setID(1)
             self.__inicio = nuevoNodo
             self.__fin = nuevoNodo
         else:
             aux:nodoListaSimple = self.__inicio
+            id:int = 0
             while aux.getSiguiente() != None:
                 aux = aux.getSiguiente()
-
+                id+=1
+            nuevoNodo.getValor().setID(id+1)
             aux.setSiguiente(nuevoNodo)
             self.__fin=nuevoNodo
         self.__tamano += 1
 
+    #Función para encontrar un viaje en la lista por su id (que es la posición)
     def encontrar(self, pos):
-        if pos<0 or pos>=self.__tamano: print("Posición no válida")
+        if pos<0 or pos>=self.__tamano:
+            print("Posición no válida")
+            return
 
         aux:nodoListaSimple = self.__inicio
         for i in range(pos):
             aux = aux.getSiguiente()
         return aux.getValor()
 
+    #Creo que este no serviría pero por si acaso si sirve xd
     def eliminar(self, pos):
-        if pos<0 or pos>=self.__tamano: print("Posición no válida")
-
+        if pos<0 or pos>=self.__tamano:
+            print("Posición no válida")
+            return
         if pos == 0:
             self.__inicio = self.__inicio.getSiguiente()
             if self.__tamano == 1:
@@ -74,6 +82,49 @@ class listaSimple:
             if pos == self.__tamano-1:
                 self.__fin = aux
         self.__tamano -= 1
+
+    #Función para generar la estrcutura de la lista simple
+    def generarEstructura(self):
+        #Si no hay nada no genero nada :)
+        if self.__inicio is None or self.__fin is None:
+            return
+        aux:nodoListaSimple = self.__inicio #Creo un nodo que recorrerá toda la lista
+        
+        reporte = "digraph ListaBaby {\n"
+        reporte += "rankdir=LR;node [shape=record, style=filled, fillcolor=lightsalmon, margin=0.2];\n"
+        reporte += "edge [style=solid, color=red];\n"
+        reporte += "graph [ranksep=1.5, nodesep=1];\n"
+        reporte += "graph [label=\"\", fontsize=20, fontcolor=black];\n"
+        
+        while aux != None:
+            reporte += f"\"{aux.getValor().getId()}\" [label=\"{{"
+            # Agregar los atributos que quieras mostrar
+            reporte += f"ID: {aux.getValor().getId()}\\l"
+            reporte += f"Origen: {aux.getValor().getOrigen()}\\l"
+            reporte += f"Destino: {aux.getValor().getDestino()}\\l"
+            reporte += f"Fecha y Hora de Inicio: {aux.getValor().getFechaHoraInicio()}\\l"
+            reporte += f"DPI del Cliente: {aux.getValor().getCliente().getDPI()}\\l"
+            reporte += f"Nombre del Cliente: {aux.getValor().getCliente().getNombre()}\\l"
+            reporte += f"Placa del Vehículo: {aux.getValor().getVehiculo().getPlaca()}\\l"
+            reporte += f"Modelo del Vehículo: {aux.getValor().getVehiculo().getModelo()}\\l"
+            reporte += f"Origen: {aux.getValor().getRuta().getOrigen()}\\l"
+            reporte += f"Destino: {aux.getValor().getRuta().getDestino()}\\l"
+            reporte += f"Tiempo de la Ruta: {aux.getValor().getRuta().getTiempoRuta()}\\l"
+            reporte += "}}\"];\n"
+
+            # Conecto los nodos
+            if aux.getSiguiente() != None:
+                reporte += f"\"{aux.getValor().getId()}\" -> \"{aux.getSiguiente().getValor().getId()}\";\n"
+            aux = aux.getSiguiente()  # Continuo con el ciclo
+
+        reporte += "}\n"  # Cierro el grafo
+
+        # Generar el archivo
+        with open("EstructuraListaCircularSimple.dot", "w") as archivo:
+            archivo.write(reporte)
+
+        # Ejecutar el comando para generar el PDF
+        os.system("dot -Tpdf EstructuraListaCircularSimple.dot -o EstructuraListaCircularSimple.pdf && start EstructuraListaCircularSimple.pdf")
 
 
 
@@ -216,7 +267,7 @@ class listaCircularDoble:
         aux.getValor().setTelefono(telefono)
         aux.getValor().setDireccion(direccion)
 
-    #Función para generar la estrcutura de la lista
+    #Función para generar la estrcutura de la lista doble
     def generarEstructura(self):
         #Si no hay nada no genero nada :)
         if self.__primero is None or self.__ultimo is None:

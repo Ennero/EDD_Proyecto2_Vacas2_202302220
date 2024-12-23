@@ -40,10 +40,10 @@ graph.render('ArbolB', format='pdf', view=True)'''
 
 
 
-
-
-
-
+'''
+listita:listaSimple=listaSimple()
+viaje1:clases.Viaje=clases.Viaje(
+'''
 
 
 '''arbolB: ArbolB=ArbolB(5)
