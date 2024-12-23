@@ -18,10 +18,8 @@ class ArbolB:
             nodo.hijos.insert(0, raiz)
             self.dividirNodo(nodo, 0)
 
-
     def insertarValorNoCompleto(self, raiz: NodoArbol, valor: Vehiculo):
         posicion: int = len(raiz.claves) - 1
-
         if raiz.hoja:
             #Inserto el valor en la página hoja
             raiz.claves.append(None)

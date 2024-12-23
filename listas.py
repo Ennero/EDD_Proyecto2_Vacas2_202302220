@@ -1,5 +1,5 @@
 from clases import Cliente, Vehiculo, Viaje
-
+import os
 
 #--------------------------------------------------------------
 #AQUÍ SE CREARA LA ----- LISTA SIMPLE------
@@ -118,21 +118,41 @@ class listaCircularDoble:
     def setPrimero(self, primero:nodoListaCircularDoble):
         self.__primero = primero
 
-    def insertar(self, valor:Cliente):
-        nuevoNodo:nodoListaCircularDoble=nodoListaCircularDoble(valor)
+    def insertar(self, valor: Cliente):
+        nuevoNodo = nodoListaCircularDoble(valor)
+        
+        # Si la lista está vacía, inicializar con el nuevo nodo
         if self.__tamano == 0:
             self.__primero = nuevoNodo
             self.__ultimo = nuevoNodo
             nuevoNodo.setSiguiente(nuevoNodo)
             nuevoNodo.setAnterior(nuevoNodo)
         else:
-            self.__ultimo.setSiguiente(nuevoNodo)
-            nuevoNodo.setAnterior(self.__ultimo)
-            nuevoNodo.setSiguiente(self.__primero)
-            self.__primero.setAnterior(nuevoNodo)
-            self.__ultimo = nuevoNodo #Solo es para actualizar el valor de la lista
+            #Si el nuevo valor es menor que el primer nodo, asi insertar al inicio
+            if valor.getDPI() < self.__primero.getValor().getDPI():
+                nuevoNodo.setSiguiente(self.__primero)
+                nuevoNodo.setAnterior(self.__ultimo)
+                self.__primero.setAnterior(nuevoNodo)
+                self.__ultimo.setSiguiente(nuevoNodo)
+                self.__primero = nuevoNodo
+            else:
+                #Busco la posicion para ordenar
+                actual = self.__primero
+                while actual.getSiguiente() != self.__primero and actual.getSiguiente().getValor().getDPI() < valor.getDPI():
+                    actual = actual.getSiguiente()
+                
+                #Inserto después del nodo actual	
+                nuevoNodo.setSiguiente(actual.getSiguiente())
+                nuevoNodo.setAnterior(actual)
+                actual.getSiguiente().setAnterior(nuevoNodo)
+                actual.setSiguiente(nuevoNodo)
+                
+                #Si se insertó al final, actualizo el último nodo
+                if actual == self.__ultimo:
+                    self.__ultimo = nuevoNodo
+
+        # Incrementar el tamaño de la lista
         self.__tamano += 1
-        self.ordenar() #Ordeno después de arreglar cada cosa
 
     def encontrar(self, pos:int):
         if pos<0 or pos>=self.__tamano: print("Posición no válida")
@@ -141,32 +161,26 @@ class listaCircularDoble:
         for i in range(pos):
             aux = aux.getSiguiente()
         return aux.getValor()
-
-    def ordenar(self):#ordenadno de forma descendente
-        if (self.__primero==None or self.__ultimo==None): return
-        else:
-            aux:nodoListaCircularDoble = self.__primero
-            while aux.getSiguiente() != self.__primero:
-                aux2:nodoListaCircularDoble = aux.getSiguiente()
-                while aux2 != self.__primero:
-                    if aux.getValor().getDPI() > aux2.getValor().getDPI():
-                        otroAux:nodoListaCircularDoble=aux
-                        aux.setValor(aux2.getValor())
-                        aux2.setValor(otroAux.getValor())
-                    aux2 = aux2.getSiguiente()
-                aux = aux.getSiguiente()
+        
 
     #Función para encontrar un cliente en la lista por su dpi
-    def encontrarCliente(self, dpi:str):
+    def encontrarCliente(self, dpi:str)->nodoListaCircularDoble:
+        if self.__tamano == 0: return None
         aux:nodoListaCircularDoble = self.__primero
-        while aux != self.__ultimo:
+        for _ in range(self.__tamano):
             if aux.getValor().getDPI() == dpi:
-                return aux.getValor()
+                return aux
+            aux = aux.getSiguiente()
+        return None
             
     #Función para eliminar al cliente de la lista
     def eliminarCliente(self, dpi:str):
+        if self.__tamano == 0: return
         aux:nodoListaCircularDoble=self.encontrarCliente(dpi)
         if aux == None: return
+        if self.__tamano == 1:
+            self.__primero = None
+            self.__ultimo = None
         if aux == self.__primero:
             self.__primero = aux.getSiguiente()
             self.__primero.setAnterior(self.__ultimo)
@@ -178,7 +192,77 @@ class listaCircularDoble:
         else:
             aux.getAnterior().setSiguiente(aux.getSiguiente())
             aux.getSiguiente().setAnterior(aux.getAnterior())
+        self.__tamano -= 1
 
+    #Función para imprimir los clientes de la lista
+    def stringClientes(self)->str:
+        aux:nodoListaCircularDoble = self.__primero
+        if aux == None: return "No hay clientes"
+        cadena:str = ""
+        contador:int = 1
+        while aux != self.__ultimo:
+            cadena+=str(contador)+". "+aux.getValor().getDPI() +" - "+ aux.getValor().getNombre() + " " + aux.getValor().getApellido() + " - " + aux.getValor().getGenero()+ " - " + aux.getValor().getTelefono() + " - " + aux.getValor().getDireccion() + "\n"
+            contador+=1
+            aux = aux.getSiguiente()
+        cadena+=str(contador)+". "+aux.getValor().getDPI()+" - "+aux.getValor().getNombre()+ " " + aux.getValor().getApellido() + " - " + aux.getValor().getGenero()+ " - " + aux.getValor().getTelefono() + " - " + aux.getValor().getDireccion() + "\n"
+        return cadena
+    
+    def modificarCliente(self, dpi:str, nombre:str, apellido:str, genero:str, telefono:str, direccion:str):
+        aux:nodoListaCircularDoble = self.encontrarCliente(dpi)
+        if aux == None: return
+        aux.getValor().setNombre(nombre)
+        aux.getValor().setApellido(apellido)
+        aux.getValor().setGenero(genero)
+        aux.getValor().setTelefono(telefono)
+        aux.getValor().setDireccion(direccion)
+
+    #Función para generar la estrcutura de la lista
+    def generarEstructura(self):
+        #Si no hay nada no genero nada :)
+        if self.__primero is None or self.__ultimo is None:
+            return
+        aux:nodoListaCircularDoble = self.__primero#Creo un nodo que recorrerá toda la lista
+        
+        reporte = "digraph listita {\n"
+        reporte += "rankdir=LR;node [shape=record, style=filled, fillcolor=salmon, margin=0.2];\n"
+        reporte += "edge [style=solid, color=red];\n"
+        reporte += "graph [ranksep=1.5, nodesep=1];\n"
+        reporte += "graph [label=\"\", fontsize=20, fontcolor=black];\n"
+
+        #Recorro la lista
+        banderita:bool = True
+        
+        while True:
+            reporte += f"\"{aux.getValor().getDPI()}\" [label=\"{{"
+            # Agregar los atributos que quieras mostrar
+            reporte += f"DPI: {aux.getValor().getDPI()}\\l"
+            reporte += f"Nombres: {aux.getValor().getNombre()}\\l"
+            reporte += f"Apellidos: {aux.getValor().getApellido()}\\l"
+            reporte += f"Genero: {aux.getValor().getGenero()}\\l"
+            reporte += f"Teléfono: {aux.getValor().getTelefono()}\\l"
+            reporte += f"Dirección: {aux.getValor().getDireccion()}\\l"
+            reporte += "}}\"];\n"
+
+            # Conecto los nodos
+            if aux.getSiguiente() != self.__primero.getSiguiente():
+                reporte += f"\"{aux.getValor().getDPI()}\" -> \"{aux.getSiguiente().getValor().getDPI()}\"[dir=both];\n"
+            elif banderita:
+                reporte += f"\"{aux.getValor().getDPI()}\" -> \"{aux.getSiguiente().getValor().getDPI()}\"[dir=both];\n"
+            
+            banderita = False
+            aux = aux.getSiguiente()  # Continuo con el ciclo
+            
+            if aux == self.__primero:
+                break
+
+        reporte += "}\n"  # Cierro el grafo
+
+        # Generar el archivo
+        with open("EstructuraListaCircularDoble.dot", "w") as archivo:
+            archivo.write(reporte)
+
+        # Ejecutar el comando para generar el PDF
+        os.system("dot -Tpdf EstructuraListaCircularDoble.dot -o EstructuraListaCircularDoble.pdf && start EstructuraListaCircularDoble.pdf")
 
 #----------------------------------------------------------------
 #Area de pruebas de las listas
