@@ -83,8 +83,8 @@ def cargaMasivaVehículos():
             messagebox.showerror("Error", "El archivo no se encontró o no se pudo abrir.")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo abrir el archivo: {str(e)}")
-        #                   651CVD:      Marca:       Modelo:    precio   
-        patronVehiculo=r'\s*(.{6}):\s*([A-Za-z]+):\s*(.+):\s*(\d+)'
+        #                  651CVD:    Marca:    Modelo:  precio   
+        patronVehiculo=r'\s*(.*):\s*([A-Za-z]+):\s*(.+):\s*(\d+)'
 
         #Ciclo para ir separando los clientes
         print(vehiculos)
@@ -134,7 +134,7 @@ def crearVehículo():
     placa=simpledialog.askstring("Creación de vehículo", "Ingrese la PLACA del vehículo:",parent=ventana)
     marca=simpledialog.askstring("Creación de vehículo", "Ingrese la MARCA del vehículo:",parent=ventana)
     modelo=simpledialog.askstring("Creación de vehículo", "Ingrese el MODELO del vehículo:",parent=ventana)
-    pps=simpledialog.askstring("Creación de vehículo", "Ingrese el PRECIO POR SEGUNDO del vehículo:",parent=ventana)
+    pps=simpledialog.askstring("Creación de vehículo", "Ingrese el PRECIO del vehículo:",parent=ventana)
 
     if placa==None or marca==None or modelo==None or pps==None:
         messagebox.showerror("Error", "No se pudo crear el vehículo.")
@@ -171,7 +171,12 @@ def eliminarCliente():
         messagebox.showinfo("Eliminación de cliente", "Cliente eliminado correctamente.")
 
 def eliminarVehículo():
-    pass
+    mostrarVehículos()
+    if vehículos.raiz==None:
+        messagebox.showerror("Error", "No hay vehículos para eliminar.")
+        info.config(text="Error al eliminar el vehículo", foreground="red", font=("Arial", 9, "italic"))
+        return
+    
 
 #Fin de funciones para eliminar------------------------------------------------------------
 
@@ -212,7 +217,28 @@ def modificarCliente():
 
 
 def modificarVehículo():
-    pass
+    mostrarVehículos()
+    if vehículos.raiz==None:
+        messagebox.showerror("Error", "No hay vehículos para modificar.")
+        info.config(text="Error al modificar el vehículo", foreground="red", font=("Arial", 9, "italic"))
+        return
+    placa=simpledialog.askstring("Modificación de vehículo", "Ingrese la PLACA del vehículo a modificar:")
+    if placa==None:
+        messagebox.showerror("Error", "No se pudo modificar el vehículo.")
+        info.config(text="Vehículo no encontrado", foreground="red", font=("Arial", 9, "italic"))
+        return
+    marca=simpledialog.askstring("Modificación de vehículo", "Ingrese la MARCA del vehículo:",parent=ventana)
+    modelo=simpledialog.askstring("Modificación de vehículo", "Ingrese el MODELO del vehículo:",parent=ventana)
+    pps=simpledialog.askstring("Modificación de vehículo", "Ingrese el PRECIO del vehículo:",parent=ventana)
+    if marca==None or modelo==None or pps==None:
+        messagebox.showerror("Error", "No se pudo modificar el vehículo.")
+        info.config(text="Error al modificar el vehículo", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        #Modifico el vehículo
+        vehículos.modificarValor(placa, marca, modelo, pps)
+        info.config(text="Vehículo modificado correctamente", foreground="green", font=("Arial", 9, "italic"))
+        messagebox.showinfo("Modificación de vehículo", "Vehículo modificado correctamente.")
 
 #Fin de funciones para modificar------------------------------------------------------------
 
@@ -230,7 +256,13 @@ def mostrarClientes():
 
 def mostrarVehículos():
     info.config(text="Mostrando vehículos...", foreground="black", font=("Arial", 9, "italic"))
-    
+    mostrar:str=""
+    mostrar=vehículos.stringVehiculos()
+    entrada.config(state=tk.NORMAL)
+    entrada.delete(1.0, tk.END)
+    entrada.insert(tk.END, mostrar)
+    print(mostrar)
+    entrada.config(state=tk.DISABLED)
 
 #Fin de funciones para mostrar información------------------------------------------------
 
@@ -240,7 +272,8 @@ def estructuraClientes():
     clientes.generarEstructura()
 
 def estructuraVehículos():
-    pass
+    info.config(text="Mostrando estructura de datos de vehículos...", foreground="black", font=("Arial", 9, "italic"))
+    vehículos.generarEstructura()
 
 def estructuraViajes():
     pass
@@ -272,15 +305,18 @@ frame2.config(border=2, relief="groove",borderwidth=5)
 
 
 #Estos frames son para organizar los:
+frame5= tk.Frame(frame11)#Viajes
+frame5.config(border=2, relief="groove", borderwidth=5)
+frame5.pack(side=tk.RIGHT)
 frame3= tk.Frame(frame11)#clientes
 frame3.config(border=2, relief="groove", borderwidth=5)
 frame3.pack(side=tk.RIGHT)
 frame4= tk.Frame(frame11)#Vehículos
 frame4.config(border=2, relief="groove", borderwidth=5)
 frame4.pack(side=tk.RIGHT)
-frame5= tk.Frame(frame11)#Viajes
-frame5.config(border=2, relief="groove", borderwidth=5)
-frame5.pack(side=tk.RIGHT)
+frame6= tk.Frame(frame11)#Reportes
+frame6.config(border=2, relief="groove", borderwidth=5)
+frame6.pack(side=tk.RIGHT)
 
 #ARRIBA---------------------------------------------------------------------------------------------------------------------------
 
@@ -321,13 +357,10 @@ edittxt.config(foreground="black", font=("Arial", 14, "bold"))
 
 scroll=tk.Scrollbar(frame2, orient="vertical")
 scroll.pack(side="right", fill="y")
-scroll2=tk.Scrollbar(frame2, orient="horizontal")
-scroll2.pack(side="bottom", fill="x")
 
-entrada = tk.Text(frame2, height=26, width=75, yscrollcommand=scroll.set, xscrollcommand=scroll2.set)
+entrada = tk.Text(frame2, height=26, width=75, yscrollcommand=scroll.set)
 entrada.pack(side="left", fill="both", expand=True)
 scroll.config(command=entrada.yview)
-scroll2.config(command=entrada.xview)
 
 entrada.config(font=("consolas", 11), state=tk.DISABLED)
 #FIN DE LA PARTE DERECHA--------------------------------------------------------------------------------------------------------------------------
@@ -403,7 +436,7 @@ guardo.pack()
 guardo.config(background="white", foreground="black", font=("Arial", 10, "bold"))
 
 #Creación del botón para modificar
-guardoComo = tk.Button(frameizquierdo1, text="Modificar", height="1", width="11", command=modificarCliente)
+guardoComo = tk.Button(frameizquierdo1, text="Modificar", height="1", width="11", command=modificarVehículo)
 guardoComo.pack()
 guardoComo.config(background="white", foreground="black", font=("Arial", 10, "bold"))
 
@@ -411,7 +444,6 @@ guardoComo.config(background="white", foreground="black", font=("Arial", 10, "bo
 guardoComo = tk.Button(framederecho1, text="Mostrar Estructura de Datos", height="1", width="22", command=estructuraVehículos)
 guardoComo.pack()
 guardoComo.config(background="white", foreground="black", font=("Arial", 10, "bold"))
-#FIN DE LA PARTE DE ABAJO--------------------------------------------------------------------------------------------------------------------------
 
 
 #Menu para los VIAJES---------------------------------------------------------------------------------------------------------------------------
@@ -430,7 +462,39 @@ guardoComo = tk.Button(contenedorViajes, text="Mostrar Estructura de Datos", hei
 guardoComo.pack()
 guardoComo.config(background="white", foreground="black", font=("Arial", 10, "bold"))
 
+
+#Menu para REPORTES---------------------------------------------------------------------------------------------------------------------------
+contenedorReportes=tk.Frame(frame6)
+contenedorReportes.pack(ipady=5,ipadx=5, padx=5, pady=5)
+tituloReportes = tk.Label(contenedorReportes, text="REPORTES", font=("Arial", 15, "bold"))
+tituloReportes.pack(side="top")
+
+#Creación de los botones de los reportes
+#TopViajes en destino
+topViajes = tk.Button(contenedorReportes, text="Top 5 Viajes Largos", height="1", width="22")
+topViajes.pack()
+topViajes.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+#TopGanacias en tiempo
+topGanancias = tk.Button(contenedorReportes, text="Top 5 Ganancias", height="1", width="22")
+topGanancias.pack()
+topGanancias.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+#TopClientes
+topClientes = tk.Button(contenedorReportes, text="Top 5 Clientes", height="1", width="22")
+topClientes.pack()
+topClientes.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+#TopVehículos
+topVehiculos = tk.Button(contenedorReportes, text="Top 5 Vehículos", height="1", width="22")
+topVehiculos.pack()
+topVehiculos.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+#Ruta de un viaje específico
+viajeEspecifico = tk.Button(contenedorReportes, text="Ruta de un Viaje", height="1", width="22")
+viajeEspecifico.pack()
+viajeEspecifico.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+
+
 #----------------------------------------------------------------------------
+#FIN DE LA PARTE DE ABAJO--------------------------------------------------------------------------------------------------------------------------
+
 #Creo la barra
 barra=tk.Menu(ventana)
 carga=tk.Menu(barra, tearoff=0)
@@ -447,7 +511,6 @@ barra.add_command(label="Salir", command=ventana.quit)
 # Asignar la barra de menús a la ventana principal
 ventana.config(menu=barra)
 #----------------------------------------------------------------------------
-
 
 #Ejecuta la ventana
 ventana.mainloop()

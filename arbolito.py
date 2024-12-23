@@ -58,7 +58,60 @@ class ArbolB:
         if not hijo.hoja:
             nodo.hijos = hijo.hijos[posicionMedia + 1:posicionMedia * 2 + 2]
             hijo.hijos = hijo.hijos[0:posicionMedia + 1]
+
+    def buscarValor(self, valor: str):
+        return self.buscarValorNodo(self.raiz, valor)
     
+    def buscarValorNodo(self, raiz: NodoArbol, valor: str):
+        if raiz==None:
+            return None
+
+        posicion: int = 0
+        #Busco la posición entre las claves donde debería de estar el valor
+        while posicion < len(raiz.claves) and valor > raiz.claves[posicion].getPlaca():
+            posicion += 1
+        #Si se encuentra el valor, se retorna
+        if posicion < len(raiz.claves) and valor == raiz.claves[posicion].getPlaca():
+            return raiz.claves[posicion]
+        #Si no se encuentra el valor y es una hoja, se retorna None
+        if raiz.hoja:
+            return None
+        #Se continúa la busqueda en los hijos
+        return self.buscarValorNodo(raiz.hijos[posicion], valor)
+    
+    def modificarValor(self, placa:str, marca:str, modelo:str, pps:float):
+        vehiculo: Vehiculo = self.buscarValor(placa)
+        if vehiculo != None:
+            vehiculo.setMarca(marca)
+            vehiculo.setModelo(modelo)
+            vehiculo.setPPS(pps)
+            return
+        return
+    
+    def stringVehiculos(self)->str:
+        if self.raiz.claves == []:
+            return "No hay vehículos"
+        contador:list[int] = [0]
+        return self.stringVehiculosNodo(self.raiz, contador)
+    
+    def stringVehiculosNodo(self, raiz: NodoArbol, contador:list[int])->str:
+        if raiz == None:
+            return 'No hay vehículos'
+        respuesta: str = ''
+
+        #Voy hacia la hoja más a la izquierda
+        if not raiz.hoja:
+            respuesta += self.stringVehiculosNodo(raiz.hijos[0], contador)
+
+        #Llegando a la hoja, proceso los valores
+        for i in range(len(raiz.claves)):
+            contador[0] += 1
+            respuesta += str(contador[0])+". "+raiz.claves[i].getPlaca()+ " - "+ raiz.claves[i].getMarca() + " - "+ raiz.claves[i].getModelo() + " - "+ str(raiz.claves[i].getPPS()) + '\n'
+        
+            #Si no es la última clave, proceso el siguiente hijo
+            if not raiz.hoja and len(raiz.hijos) > i+1:
+                respuesta += self.stringVehiculosNodo(raiz.hijos[i+1], contador)
+        return respuesta
 
 #-----------------------------------------------------
 #GENERACIÓN DE LA GRAFICA
@@ -71,7 +124,7 @@ class ArbolB:
 
     #Función para visualizar el nodo del arbol
     def crearNodo(self, nodo: NodoArbol, nodo_id: str, grafica: Digraph):
-        claves = '|'.join(str(k.getPlaca) for k in nodo.claves) #Uno las claves con un |
+        claves = '|'.join(str(k.getPlaca()+" - "+k.getMarca() + " - " + k.getModelo() + " - " + k.getPPS()) for k in nodo.claves) #Uno las claves con un |
         #Creo el nodo en el grafo
         grafica.node(nodo_id, claves) 
         
@@ -83,7 +136,7 @@ class ArbolB:
                 grafica.edge(nodo_id, hijo_id)
 
     #Función para generar la gráfica del arbol
-    def generarGrafica(self, nombre='ReporteArbolB'):
+    def generarEstructura(self, nombre='ReporteArbolB'):
         #Reinicia el contador de IDs
         self._counter = 0
         
