@@ -1,5 +1,5 @@
 digraph listita {
-rankdir=LR;node [shape=record, style=filled, fillcolor=red, margin=0.2];
+rankdir=LR;node [shape=record, style=filled, fillcolor=salmon, margin=0.2];
 edge [style=solid, color=red];
 graph [ranksep=1.5, nodesep=1];
 graph [label="", fontsize=20, fontcolor=black];

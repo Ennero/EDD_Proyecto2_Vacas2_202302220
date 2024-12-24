@@ -2,7 +2,8 @@ from arbolito import ArbolB
 from listas import listaCircularDoble, listaSimple
 import clases
 import graphviz
-import interfaz
+#import interfaz
+import ListaAdyacente
 
 '''#Inicializo las estructuras
 vehículos: ArbolB=ArbolB(5)
@@ -38,8 +39,20 @@ arbolB.insertarValor(14)'''
 graph = graphviz.Source(grafiquita)
 graph.render('ArbolB', format='pdf', view=True)'''
 
+listita:ListaAdyacente.ListaAdyacencia=ListaAdyacente.ListaAdyacencia()
+listita.insertarVertice(ListaAdyacente.Vertice(1), ListaAdyacente.Vertice(2))
 
+listita.insertarVertice(ListaAdyacente.Vertice(1), ListaAdyacente.Vertice(3))
 
+listita.insertarVertice(ListaAdyacente.Vertice(1), ListaAdyacente.Vertice(4))
+
+listita.insertarVertice(ListaAdyacente.Vertice(2), ListaAdyacente.Vertice(1))
+
+listita.insertarVertice(ListaAdyacente.Vertice(3), ListaAdyacente.Vertice(2))
+
+listita.insertarVertice(ListaAdyacente.Vertice(4), ListaAdyacente.Vertice(2))
+
+print("Lista de adyanecia")
 '''
 listita:listaSimple=listaSimple()
 viaje1:clases.Viaje=clases.Viaje(

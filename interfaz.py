@@ -32,7 +32,38 @@ def limpiar():
     
 
 def cargarRutas():
-    pass
+    info.config(text="Cargando rutas...", foreground="black", font=("Arial", 9, "italic"))
+    ruta=filedialog.askopenfilename(title="Cargar Rutas", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
+    if ruta!="":
+        try:
+            with open(ruta, "r", encoding="utf-8") as archivo: #Abro el archivo
+                rutas=archivo.read() #Leo el archivo y lo paso a string
+        except FileNotFoundError:
+            messagebox.showerror("Error", "El archivo no se encontró o no se pudo abrir.")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo abrir el archivo: {str(e)}")
+        #              Oviedo         Bilbso        100
+        patroRutas=r'\s*(.+)\s*/\s*/\s*(.+)\s*/s\s*(\d+)%' #Patrón para las rutas
+
+        #Ciclo para ir separando las rutas
+        rutitas=rutas.split("/n")
+        print("Se hizo split------------------------------------")
+        for ruta in rutitas:
+            print(ruta)
+            datos=re.search(patroRutas, ruta)
+            if datos:
+                print(f"Ruta: {datos.group(1)} {datos.group(2)} {datos.group(3)}")
+                #Instancio la ruta y la inserto en el grafo
+                rutonga:clases.Ruta=clases.Ruta(datos.group(1), datos.group(2), datos.group(3))
+
+                #Aquí debería ingresarlo dentro del grafo a su tiempo
+
+                
+        info.config(text="Rutas cargadas correctamente", foreground="green", font=("Arial", 9, "italic"))
+    else:
+        print("No se pudo abrir el archivo")
+        messagebox.showerror("Error", "No se pudo abrir el archivo.")
+        info.config(text="Error al cargar rutas", foreground="red", font=("Arial", 9, "italic"))
 
 #Funciones de carga masiva de datos-----------------------------------------------------------------------------------------------------------
 #Función para la carga masiva de clientes
