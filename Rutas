@@ -1,0 +1,66 @@
+digraph Grafo {
+	node [color=lightsalmon style=filled]
+	edge [color=red style=dotted]
+	rankdir=LR size="8,5"
+	node [shape=circle]
+	edge [dir=none]
+	"Oviedo "
+	"Oviedo " -> "Bilbao " [label=304.0]
+	"Oviedo " -> "Gijón " [label=1.0]
+	"Bibao "
+	"Bibao " -> "Zaragoza " [label=324.0]
+	"Madrid "
+	"Madrid " -> "Barcelona " [label=10.0]
+	"Madrid " -> "Valencia " [label=7.0]
+	"Barcelona "
+	"Barcelona " -> "Valencia " [label=5.0]
+	"Barcelona " -> "Zaragoza " [label=6.0]
+	"Valencia "
+	"Valencia " -> "Sevilla " [label=12.0]
+	"Sevilla "
+	"Sevilla " -> "Granada " [label=4.0]
+	"Sevilla " -> "Córdoba " [label=3.0]
+	"Granada "
+	"Granada " -> "Málaga " [label=2.0]
+	"Córdoba "
+	"Córdoba " -> "Málaga " [label=3.0]
+	"Málaga "
+	"Málaga " -> "Alicante " [label=8.0]
+	"Alicante "
+	"Alicante " -> "Murcia " [label=2.0]
+	"Murcia "
+	"Murcia " -> "Cartagena " [label=1.0]
+	"Cartagena "
+	"Cartagena " -> "Almería " [label=3.0]
+	"Zaragoza "
+	"Zaragoza " -> "Bilbao " [label=9.0]
+	"Zaragoza " -> "Pamplona " [label=6.0]
+	"Bilbao "
+	"Bilbao " -> "Santander " [label=3.0]
+	"Santander "
+	"Santander " -> "Oviedo " [label=4.0]
+	"Gijón "
+	"Gijón " -> "León " [label=5.0]
+	"León "
+	"León " -> "Salamanca " [label=6.0]
+	"Salamanca "
+	"Salamanca " -> "Valladolid " [label=2.0]
+	"Valladolid "
+	"Valladolid " -> "Burgos " [label=3.0]
+	"Burgos "
+	"Burgos " -> "Logroño " [label=4.0]
+	"Logroño "
+	"Logroño " -> "San Sebastián " [label=6.0]
+	"San Sebastián "
+	"San Sebastián " -> "Pamplona " [label=2.0]
+	"Pamplona "
+	"Pamplona " -> "Huesca " [label=5.0]
+	"Huesca "
+	"Huesca " -> "Lleida " [label=3.0]
+	"Lleida "
+	"Lleida " -> "Tarragona " [label=2.0]
+	"Tarragona "
+	"Tarragona " -> "Girona " [label=4.0]
+	"Girona "
+	"Girona " -> "Barcelona " [label=3.0]
+}

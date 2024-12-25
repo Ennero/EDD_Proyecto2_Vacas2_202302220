@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox,simpledialog
-from tkinter import filedialog
+from tkinter import Label, PhotoImage, messagebox,simpledialog,filedialog,Tk
 from PIL import Image, ImageTk
 import subprocess
 import re
@@ -34,7 +33,7 @@ def limpiar():
     
 
 def cargarRutas():
-    global rutas
+    global rutas,rutaGrafica
     info.config(text="Cargando rutas...", foreground="black", font=("Arial", 9, "italic"))
     ruta=filedialog.askopenfilename(title="Cargar Rutas", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
     if ruta!="":
@@ -65,9 +64,18 @@ def cargarRutas():
                     rutas.insertarRuta(origen, destino, tiempo)
                     print(origen, destino, tiempo)
 
-                #Aquí debería ingresarlo dentro del grafo a su tiempo
-
         rutas.generarGrafo()
+        rutaGrafica="Rutas.png"
+
+        graficaImg=PhotoImage(file=rutaGrafica) #Actualizo la gráfica
+        graficaImg=graficaImg.subsample(1,1)
+        gra.config(image=graficaImg)
+        gra.image=graficaImg
+
+        #Aquí destruyo el botón para cargar rutas porque ya no lo voy a volver a usar
+        botonRutas.destroy()
+        
+        #Aquí solo confirmo que se hizo bien
         info.config(text="Rutas cargadas correctamente", foreground="green", font=("Arial", 9, "italic"))
         messagebox.showinfo("Carga de rutas", "Rutas cargadas correctamente.")
     else:
@@ -151,6 +159,7 @@ def cargaMasivaVehículos():
 
 #Funciónes para crear----------------------------------------------------------------
 def crearCliente():
+    global clientes
     info.config(text="Creando cliente...", foreground="black", font=("Arial", 9, "italic"))
     #Solicito los datos para crear el cliente
     nombres=simpledialog.askstring("Creación de usuario", "Ingrese los NOMBRES del Cliente:",parent=ventana)
@@ -172,6 +181,7 @@ def crearCliente():
         info.config(text="Cliente creado correctamente", foreground="green", font=("Arial", 9, "italic"))
     
 def crearVehículo():
+    global vehículos
     info.config(text="Creando vehículo...", foreground="black", font=("Arial", 9, "italic"))
     #Solicito los datos para crear el vehículo
     placa=simpledialog.askstring("Creación de vehículo", "Ingrese la PLACA del vehículo:",parent=ventana)
@@ -191,12 +201,14 @@ def crearVehículo():
         info.config(text="Vehículo creado correctamente", foreground="green", font=("Arial", 9, "italic"))
 
 def crearViaje():
+    global viajes
     info.config(text="Creando viaje...", foreground="black", font=("Arial", 9, "italic"))
 
 #Fin de funciones para crear--------------------------------------------------------------
 
 #Funciones para eliminar----------------------------------------------------------------
 def eliminarCliente():
+    global clientes
     mostrarClientes()
     if clientes.getTamano==0:
         messagebox.showerror("Error", "No hay clientes para eliminar.")
@@ -218,6 +230,7 @@ def eliminarCliente():
         messagebox.showinfo("Eliminación de cliente", "Cliente eliminado correctamente.")
 
 def eliminarVehículo():
+    global vehículos
     mostrarVehículos()
     if vehículos.raiz==None:
         messagebox.showerror("Error", "No hay vehículos para eliminar.")
@@ -229,6 +242,7 @@ def eliminarVehículo():
 
 #Funciones para modificar----------------------------------------------------------------
 def modificarCliente():
+    global clientes
     mostrarClientes()
     #Si es que no tiene nada
     if clientes.getTamano==0:
@@ -263,6 +277,7 @@ def modificarCliente():
             messagebox.showinfo("Modificación de cliente", "Cliente modificado correctamente.")
 
 def modificarVehículo():
+    global vehículos
     mostrarVehículos()
     if vehículos.raiz==None:
         messagebox.showerror("Error", "No hay vehículos para modificar.")
@@ -291,6 +306,7 @@ def modificarVehículo():
 
 #Funciones para mostrar información-------------------------------------------------------
 def mostrarClientes():
+    global clientes
     info.config(text="Mostrando clientes...", foreground="black", font=("Arial", 9, "italic"))
     mostrar:str=""
     mostrar=clientes.stringClientes()
@@ -301,6 +317,7 @@ def mostrarClientes():
     entrada.config(state=tk.DISABLED)
 
 def mostrarVehículos():
+    global vehículos
     info.config(text="Mostrando vehículos...", foreground="black", font=("Arial", 9, "italic"))
     mostrar:str=""
     mostrar=vehículos.stringVehiculos()
@@ -313,14 +330,17 @@ def mostrarVehículos():
 
 #Funciones para mostrar estructura de datos------------------------------------------------
 def estructuraClientes():
+    global clientes
     info.config(text="Mostrando estructura de datos de clientes...", foreground="black", font=("Arial", 9, "italic"))
     clientes.generarEstructura()
 
 def estructuraVehículos():
+    global vehículos
     info.config(text="Mostrando estructura de datos de vehículos...", foreground="black", font=("Arial", 9, "italic"))
     vehículos.generarEstructura()
 
 def estructuraViajes():
+    global viajes
     pass
 
 
@@ -333,7 +353,7 @@ def estructuraViajes():
 #Creo la ventana principal
 ventana = tk.Tk()
 ventana.title("Llega Rapidito")
-ventana.geometry("1200x700")
+ventana.geometry("1280x720")
 
 
 # Creación de los frames para la interfaz
@@ -378,7 +398,14 @@ edittxt.pack()
 edittxt.config(foreground="black", font=("Arial", 14, "bold"))
 
 #Imagen de la grafica
+#Le coloco un path a la grafica
+imagen_original = Image.open(rutaGrafica)
+imagen_redimensionada = imagen_original.resize((600, 400), Image.Resampling.LANCZOS)  # Redimensionar a 600x400
+graficaImg = ImageTk.PhotoImage(imagen_redimensionada)
 
+# Mostrar la imagen en un Label
+gra = Label(frame1, image=graficaImg)
+gra.pack(anchor="e")
 
 
 

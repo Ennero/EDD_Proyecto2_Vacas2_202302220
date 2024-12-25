@@ -71,7 +71,7 @@ class ListaAdyacente:
 
 #Función para generar el grafo
     def generarGrafo(self):
-        grafica = graphviz.Digraph('Grafo', filename='Rutas.gv', format='pdf')
+        grafica = graphviz.Digraph('Grafo', filename='Rutas', format='png')
         grafica.attr(rankdir='LR', size='8,5')
         grafica.node_attr.update(color='lightsalmon', style='filled')
         grafica.edge_attr.update(color='red', style='dotted')
@@ -85,7 +85,8 @@ class ListaAdyacente:
                 grafica.edge(aux.origen, aux2.destino, label=str(aux2.peso))
                 aux2 = aux2.atras
             aux = aux.siguiente
-        grafica.view()
+        grafica.render()
+        #grafica.view() Esto solo para comprobar de que sirva pero la veradad si sirve :)
 
 
 
