@@ -82,9 +82,6 @@ class Vehiculo:
     def setPPS(self,pps:float):
         self.__pps=pps
 #------------------------------------------------------------------------------------------
-
-
-
 #se guardará en un grafo
 class Ruta:
     def __init__(self, origen:str, destino:str, tiempoRuta:float):
