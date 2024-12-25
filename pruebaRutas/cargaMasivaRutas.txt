@@ -1,0 +1,32 @@
+Oviedo / Bilbao / 304 %
+Bibao / Zaragoza / 324% 
+Madrid / Barcelona / 10%
+Madrid / Valencia / 7%
+Barcelona / Valencia / 5%
+Barcelona / Zaragoza / 6%
+Valencia / Sevilla / 12%
+Sevilla / Granada / 4%
+Sevilla / Córdoba / 3%
+Granada / Málaga / 2%
+Córdoba / Málaga / 3%
+Málaga / Alicante / 8%
+Alicante / Murcia / 2%
+Murcia / Cartagena / 1%
+Cartagena / Almería / 3%
+Zaragoza / Bilbao / 9%
+Zaragoza / Pamplona / 6%
+Bilbao / Santander / 3%
+Santander / Oviedo / 4%
+Oviedo / Gijón / 1%
+Gijón / León / 5%
+León / Salamanca / 6%
+Salamanca / Valladolid / 2%
+Valladolid / Burgos / 3%
+Burgos / Logroño / 4%
+Logroño / San Sebastián / 6%
+San Sebastián / Pamplona / 2%
+Pamplona / Huesca / 5%
+Huesca / Lleida / 3%
+Lleida / Tarragona / 2%
+Tarragona / Girona / 4%
+Girona / Barcelona / 3%

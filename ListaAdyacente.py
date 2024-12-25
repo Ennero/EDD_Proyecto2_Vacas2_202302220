@@ -73,8 +73,8 @@ class ListaAdyacente:
     def generarGrafo(self):
         grafica = graphviz.Digraph('Grafo', filename='Rutas.gv', format='pdf')
         grafica.attr(rankdir='LR', size='8,5')
-        grafica.node_attr.update(color='lightblue2', style='filled')
-        grafica.edge_attr.update(color='blue', style='dotted')
+        grafica.node_attr.update(color='lightsalmon', style='filled')
+        grafica.edge_attr.update(color='red', style='dotted')
         grafica.attr('node', shape='circle')
         grafica.attr('edge', dir='none')
         aux = self.inicio
@@ -89,7 +89,7 @@ class ListaAdyacente:
 
 
 
-listita=ListaAdyacente()
+'''listita=ListaAdyacente()
 listita.insertarRuta("A","B",5)
 listita.insertarRuta("A","C",7)
 listita.insertarRuta("B","C",2)
@@ -98,4 +98,4 @@ listita.insertarRuta("C","D",1)
 listita.insertarRuta("C","E",3)
 listita.insertarRuta("D","E",8)
 listita.insertarRuta("D","F",6)
-listita.generarGrafo()
+listita.generarGrafo()'''

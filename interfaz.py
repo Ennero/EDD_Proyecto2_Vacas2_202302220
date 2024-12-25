@@ -7,12 +7,14 @@ import re
 from arbolito import ArbolB
 from listas import listaCircularDoble, listaSimple,nodoListaCircularDoble,nodoListaSimple
 import clases
+from ListaAdyacente import ListaAdyacente,NodoListaAdyacente,NodoRuta
 
 
 #Inicializo las estructuras
 vehículos: ArbolB=ArbolB(5)
 clientes: listaCircularDoble =listaCircularDoble()
 viajes: listaSimple = listaSimple()
+rutas: ListaAdyacente=ListaAdyacente()
 
 
 
@@ -32,34 +34,42 @@ def limpiar():
     
 
 def cargarRutas():
+    global rutas
     info.config(text="Cargando rutas...", foreground="black", font=("Arial", 9, "italic"))
     ruta=filedialog.askopenfilename(title="Cargar Rutas", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
     if ruta!="":
         try:
             with open(ruta, "r", encoding="utf-8") as archivo: #Abro el archivo
-                rutas=archivo.read() #Leo el archivo y lo paso a string
+                rutongas=archivo.read() #Leo el archivo y lo paso a string
         except FileNotFoundError:
             messagebox.showerror("Error", "El archivo no se encontró o no se pudo abrir.")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo abrir el archivo: {str(e)}")
-        #              Oviedo         Bilbso        100
-        patroRutas=r'\s*(.+)\s*/\s*/\s*(.+)\s*/s\s*(\d+)%' #Patrón para las rutas
+        #                Origen      Destino       100
+        patroRutas = r'\s*(.+)\s*/\s*(.+)\s*/\s*(\d+)\s*' #Patrón para las rutas
 
         #Ciclo para ir separando las rutas
-        rutitas=rutas.split("/n")
+        rutitas=rutongas.split('%')
         print("Se hizo split------------------------------------")
         for ruta in rutitas:
-            print(ruta)
             datos=re.search(patroRutas, ruta)
             if datos:
-                print(f"Ruta: {datos.group(1)} {datos.group(2)} {datos.group(3)}")
-                #Instancio la ruta y la inserto en el grafo
-                rutonga:clases.Ruta=clases.Ruta(datos.group(1), datos.group(2), datos.group(3))
+                #Ingreso los valores del grupo dentro de variables
+                origen=datos.group(1)
+                destino=datos.group(2)
+                tiempo=float(datos.group(3))
+                if origen==None or destino==None or tiempo==None:
+                    #Solo es para trabajar con el último
+                    print("No se pudo ingresar la ruta") 
+                else:
+                    rutas.insertarRuta(origen, destino, tiempo)
+                    print(origen, destino, tiempo)
 
                 #Aquí debería ingresarlo dentro del grafo a su tiempo
 
-                
+        rutas.generarGrafo()
         info.config(text="Rutas cargadas correctamente", foreground="green", font=("Arial", 9, "italic"))
+        messagebox.showinfo("Carga de rutas", "Rutas cargadas correctamente.")
     else:
         print("No se pudo abrir el archivo")
         messagebox.showerror("Error", "No se pudo abrir el archivo.")
@@ -68,6 +78,7 @@ def cargarRutas():
 #Funciones de carga masiva de datos-----------------------------------------------------------------------------------------------------------
 #Función para la carga masiva de clientes
 def cargaMasivaClientes():
+    global clientes
     info.config(text="Cargando clientes...", foreground="black", font=("Arial", 9, "italic"))
     ruta=filedialog.askopenfilename(title="Cargar Clientes", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
     if ruta!="":
@@ -103,6 +114,7 @@ def cargaMasivaClientes():
 
 #Función para la carga masiva de vehículos
 def cargaMasivaVehículos():
+    global vehículos
     info.config(text="Cargando vehículos...", foreground="black", font=("Arial", 9, "italic"))
     ruta=filedialog.askopenfilename(title="Cargar Vehículos", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
     if ruta!="":
