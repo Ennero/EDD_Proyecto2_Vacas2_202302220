@@ -1,0 +1,17 @@
+digraph RecorridoLista {
+	rankdir=TB
+	node [height=0 shape=none width=0]
+	invisible [label=""]
+	node [color=lightblue shape=box style=filled]
+	nodo_0 [label="A
+Distancia al siguiente: 7"]
+	invisible -> nodo_0
+	nodo_1 [label="C
+Distancia al siguiente: 1"]
+	nodo_0 -> nodo_1
+	nodo_2 [label="D
+Distancia al siguiente: 6"]
+	nodo_1 -> nodo_2
+	nodo_3 [label=F]
+	nodo_2 -> nodo_3
+}

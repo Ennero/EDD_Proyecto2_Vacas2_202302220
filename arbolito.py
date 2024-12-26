@@ -159,3 +159,10 @@ class ArbolB:
         #Generar el PDF
         grafica.render(nombre, view=True, cleanup=True)
         print(f"Reporte del arbolB generado exitosamente: {nombre}.pdf")
+
+
+
+
+
+
+#### Aquí voy a meter la cosa para eliminar :)

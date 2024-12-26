@@ -583,7 +583,183 @@ class ArbolB:
 ```
 ##### Funcionalidades
 
+- insertarValor(self, valor: Vehiculo): Inserta un nuevo Vehiculo en el árbol. Llama a insertarValorNoCompleto para realizar la inserción y maneja el caso especial de que la raíz se llene, lo que requiere dividir la raíz y crear una nueva raíz.
+```python
+    def insertarValor(self, valor: Vehiculo):
+        raiz: NodoArbol = self.raiz
 
+        self.insertarValorNoCompleto(raiz, valor)
+
+        if (len(raiz.claves) > self.orden - 1):
+            nodo: NodoArbol = NodoArbol()
+            self.raiz = nodo
+            nodo.hijos.insert(0, raiz)
+            self.dividirNodo(nodo, 0)
+```
+
+- insertarValorNoCompleto(self, raiz: NodoArbol, valor: Vehiculo): Realiza la inserción recursiva del valor.
+
+  -   Si el nodo actual (raiz) es una hoja, inserta el valor en la lista de claves, manteniendo el orden ascendente por la placa del vehículo.
+  -   Si el nodo actual no es una hoja, busca el hijo apropiado donde insertar el valor y llama recursivamente a insertarValorNoCompleto en ese hijo.
+  -   Después de la llamada recursiva, verifica si el hijo se ha llenado (número de claves > orden - 1) y, en ese caso, llama a dividirNodo para dividirlo.
+```python
+    def insertarValorNoCompleto(self, raiz: NodoArbol, valor: Vehiculo):
+        posicion: int = len(raiz.claves) - 1
+        if raiz.hoja:
+            #Inserto el valor en la página hoja
+            raiz.claves.append(None)
+            
+            while posicion >= 0 and valor.getPlaca() < raiz.claves[posicion].getPlaca():
+                raiz.claves[posicion + 1] = raiz.claves[posicion]
+                posicion -= 1
+
+            raiz.claves[posicion + 1] = valor
+
+        else:
+
+            while posicion >=0 and valor.getPlaca() < raiz.claves[posicion].getPlaca():
+                posicion -= 1
+
+            posicion += 1
+
+            self.insertarValorNoCompleto(raiz.hijos[posicion], valor)
+
+            if len(raiz.hijos[posicion].claves) > self.orden - 1:
+                self.dividirNodo(raiz, posicion)
+```
+-  dividirNodo(self, raiz: NodoArbol, posicion: int): Divide un nodo hijo que se ha llenado.
+  -   Calcula la posición media de las claves del hijo.
+  -   Crea un nuevo nodo.
+  -   Mueve la clave media del hijo al nodo padre (raiz).
+  -   Mueve las claves mayores que la clave media al nuevo nodo.
+  -   Si el hijo no es una hoja, también mueve los hijos correspondientes al nuevo nodo.
+```python
+    def dividirNodo(self, raiz: NodoArbol, posicion: int):
+        posicionMedia: int = int((self.orden - 1) / 2)
+
+        hijo: NodoArbol = raiz.hijos[posicion]
+
+        nodo: NodoArbol = NodoArbol(hijo.hoja)
+        raiz.hijos.insert(posicion + 1, nodo)
+
+        raiz.claves.insert(posicion, hijo.claves[posicionMedia])
+
+        nodo.claves = hijo.claves[posicionMedia + 1:posicionMedia * 2 + 1]
+        hijo.claves = hijo.claves[0:posicionMedia]
+
+        if not hijo.hoja:
+            nodo.hijos = hijo.hijos[posicionMedia + 1:posicionMedia * 2 + 2]
+            hijo.hijos = hijo.hijos[0:posicionMedia + 1]
+```
+- buscarValor(self, valor: str): Busca un vehículo por su placa en el árbol, llamando a la función recursiva buscarValorNodo.
+```python
+    def buscarValor(self, valor: str):
+        return self.buscarValorNodo(self.raiz, valor)
+```
+- buscarValorNodo(self, raiz: NodoArbol, valor: str): Realiza la búsqueda recursiva del valor en el árbol.
+```python
+    def buscarValorNodo(self, raiz: NodoArbol, valor: str):
+        if raiz==None:
+            return None
+
+        posicion: int = 0
+        #Busco la posición entre las claves donde debería de estar el valor
+        while posicion < len(raiz.claves) and valor > raiz.claves[posicion].getPlaca():
+            posicion += 1
+        #Si se encuentra el valor, se retorna
+        if posicion < len(raiz.claves) and valor == raiz.claves[posicion].getPlaca():
+            return raiz.claves[posicion]
+        #Si no se encuentra el valor y es una hoja, se retorna None
+        if raiz.hoja:
+            return None
+        #Se continúa la busqueda en los hijos
+        return self.buscarValorNodo(raiz.hijos[posicion], valor)
+```
+- modificarValor(self, placa: str, marca: str, modelo: str, pps: float): Busca un vehículo por su placa y, si lo encuentra, modifica sus atributos.
+```python
+    def modificarValor(self, placa:str, marca:str, modelo:str, pps:float):
+        vehiculo: Vehiculo = self.buscarValor(placa)
+        if vehiculo != None:
+            vehiculo.setMarca(marca)
+            vehiculo.setModelo(modelo)
+            vehiculo.setPPS(pps)
+            return
+        return
+```
+- stringVehiculos(self) y stringVehiculosNodo(self, raiz: NodoArbol, contador:list[int]): Genera una cadena de texto con la información de todos los vehículos en el árbol, utilizando un recorrido inorden para mostrar los vehículos ordenados por placa.
+```python
+    def stringVehiculos(self)->str:
+        if self.raiz.claves == []:
+            return "No hay vehículos"
+        contador:list[int] = [0]
+        return self.stringVehiculosNodo(self.raiz, contador)
+```
+```python
+    def stringVehiculosNodo(self, raiz: NodoArbol, contador:list[int])->str:
+        if raiz == None:
+            return 'No hay vehículos'
+        respuesta: str = ''
+
+        #Voy hacia la hoja más a la izquierda
+        if not raiz.hoja:
+            respuesta += self.stringVehiculosNodo(raiz.hijos[0], contador)
+
+        #Llegando a la hoja, proceso los valores
+        for i in range(len(raiz.claves)):
+            contador[0] += 1
+            respuesta += str(contador[0])+". "+raiz.claves[i].getPlaca()+ " - "+ raiz.claves[i].getMarca() + " - "+ raiz.claves[i].getModelo() + " - "+ str(raiz.claves[i].getPPS()) + '\n'
+        
+            #Si no es la última clave, proceso el siguiente hijo
+            if not raiz.hoja and len(raiz.hijos) > i+1:
+                respuesta += self.stringVehiculosNodo(raiz.hijos[i+1], contador)
+        return respuesta
+```
+
+- crearIdNodo(self): Genera un ID único para cada nodo para la generación del gráfico.
+```python
+    def crearIdNodo(self):
+        #Contador interno
+        self._counter += 1
+        return f'node{self._counter}'
+```
+
+
+- crearNodo(self, nodo: NodoArbol, nodo_id: str, grafica: Digraph): Crea la representación visual de un nodo en el gráfico utilizando Graphviz.
+```python
+    def crearNodo(self, nodo: NodoArbol, nodo_id: str, grafica: Digraph):
+        claves = '|'.join(str(k.getPlaca()+" - "+k.getMarca() + " - " + k.getModelo() + " - " + k.getPPS()) for k in nodo.claves) #Uno las claves con un |
+        #Creo el nodo en el grafo
+        grafica.node(nodo_id, claves) 
+        
+        #Si el nodo tiene hijos, lo recorro recursivamente
+        if not nodo.hoja:
+            for i, hijo in enumerate(nodo.hijos):
+                hijo_id = self.crearIdNodo()
+                self.crearNodo(hijo, hijo_id, grafica)
+                grafica.edge(nodo_id, hijo_id)
+```
+
+
+- generarEstructura(self, nombre='ReporteArbolB'): Genera la representación gráfica del árbol B en un archivo PDF utilizando Graphviz.
+```python
+    def generarEstructura(self, nombre='ReporteArbolB'):
+        #Reinicia el contador de IDs
+        self._counter = 0
+        
+        # Inicializar el Digraph
+        grafica = Digraph(comment='Árbol B')
+        grafica.attr(rankdir='TB')
+        grafica.attr('node', shape='record')
+        
+        #Genera todo a partir de la raiz
+        raiz_id = self.crearIdNodo()
+        self.crearNodo(self.raiz, raiz_id, grafica)
+        
+        #Generar el PDF
+        grafica.render(nombre, view=True, cleanup=True)
+        print(f"Reporte del arbolB generado exitosamente: {nombre}.pdf")
+```
+### Lista Adyacente
 
 
 
