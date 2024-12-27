@@ -1,4 +1,3 @@
-from clases import Ruta
 import graphviz
 
 class NodoListaAdyacente:
@@ -16,7 +15,6 @@ class NodoListaAdyacente:
         return None
 
     def insertar(self, destino:str, peso:float):
-        #Aquí busco si ya existe la ruta de destino
         aux = self.buscar(destino)
         if aux:
             aux.peso = peso
@@ -30,36 +28,53 @@ class NodoListaAdyacente:
                 aux = aux.atras
             aux.atras = nuevo
 
-
 class NodoRuta:
     def __init__(self, peso:float, destino:str):
         self.peso:float = peso
         self.destino:str = destino
         self.atras:NodoRuta = None
 
-
-
-# Clase para almacenar la información de los nodos en el algoritmo de Dijkstra
 class NodoDistancia:
     def __init__(self, nodo: str):
         self.nodo = nodo
-        self.distancia = float('inf') # Distancia acumulada
+        self.distancia = float('inf')
         self.visitado = False 
-        self.siguiente = None #Referencia al siguiente nodo en la lista
-        self.camino = None  #Referencia al primer nodo del camino
+        self.siguiente = None
+        self.camino = None
 
-#Nodo para almacenar los nodos del camino
 class NodoCamino:
     def __init__(self, nodo: str):
         self.nodo = nodo
         self.siguiente = None
 
-#Clase para almacenar la estructura de los caminos
+class ListaResultado:
+    def __init__(self):
+        self.inicio = None
+        self.fin = None
+    
+    def agregar(self, nodo: str):
+        nuevo = NodoCamino(nodo)
+        if not self.inicio:
+            self.inicio = nuevo
+            self.fin = nuevo
+        else:
+            self.fin.siguiente = nuevo
+            self.fin = nuevo
+    
+    def convertir_a_string(self):
+        resultado = ""
+        actual = self.inicio
+        while actual:
+            resultado += actual.nodo
+            if actual.siguiente:
+                resultado += " -> "
+            actual = actual.siguiente
+        return resultado
+
 class EstructuraCaminos:
     def __init__(self):
         self.inicio = None
 
-    #Función para insertar un nodo    
     def insertar(self, nodo: str):
         nuevo = NodoDistancia(nodo)
         if not self.inicio:
@@ -70,7 +85,6 @@ class EstructuraCaminos:
             aux = aux.siguiente
         aux.siguiente = nuevo
 
-    #Función para copiar un camino
     def copiar_camino(self, caminoOrigen):
         if not caminoOrigen:
             return None
@@ -85,7 +99,7 @@ class EstructuraCaminos:
         
         return nuevoInicio
 
-    def obtener_menor_distancia(self):
+    def obtenerMenorDistancia(self):
         if not self.inicio:
             return None
         menor = None
@@ -105,15 +119,6 @@ class EstructuraCaminos:
             aux = aux.siguiente
         return None
 
-
-
-
-
-
-
-
-
-
 class ListaAdyacente:
     def __init__(self):
         self.inicio = None
@@ -126,9 +131,7 @@ class ListaAdyacente:
             aux = aux.siguiente
         return None
 
-    #Función para insertar una ruta
     def insertarRuta(self, origen:str, destino:str, peso:float):
-        # Insertar ruta original
         aux = self.buscar(origen)
         if aux:
             aux.insertar(destino, peso)
@@ -143,7 +146,6 @@ class ListaAdyacente:
                     aux = aux.siguiente
                 aux.siguiente = nuevo
         
-        # Insertar ruta inversa automáticamente
         aux = self.buscar(destino)
         if aux:
             aux.insertar(origen, peso)
@@ -158,14 +160,12 @@ class ListaAdyacente:
                     aux = aux.siguiente
                 aux.siguiente = nuevo
 
-#Función para generar el grafo
     def generarGrafo(self):
-        grafica = graphviz.Digraph('Grafo', filename='Rutas', format='png')
+        grafica = graphviz.Graph('Grafo', filename='Rutas', format='png')
         grafica.attr(rankdir='LR', size='8,5')
         grafica.node_attr.update(color='lightsalmon', style='filled')
         grafica.edge_attr.update(color='red', style='dotted')
         grafica.attr('node', shape='circle')
-        grafica.attr('edge', dir='none')
         aux = self.inicio
         while aux:
             grafica.node(aux.origen)
@@ -175,9 +175,6 @@ class ListaAdyacente:
                 aux2 = aux2.atras
             aux = aux.siguiente
         grafica.render()
-        #grafica.view() Esto solo para comprobar de que sirva pero la veradad si sirve :)
-
-#Aquí coloca las funciones para encontrar la ruta más corta usando dijkstra------------------------------------------
 
     def encontrarRutaCorta(self, origen: str, destino: str):
         caminos = EstructuraCaminos()
@@ -193,7 +190,7 @@ class ListaAdyacente:
             nodo_origen.camino = NodoCamino(origen)
         
         while True:
-            actual = caminos.obtener_menor_distancia()
+            actual = caminos.obtenerMenorDistancia()
             if not actual or actual.nodo == destino:
                 break
                 
@@ -217,12 +214,12 @@ class ListaAdyacente:
         
         nodo_final = caminos.buscar(destino)
         if nodo_final and nodo_final.camino:
-            camino = []
+            resultado = ListaResultado()
             aux = nodo_final.camino
             while aux:
-                camino.append(aux.nodo)
+                resultado.agregar(aux.nodo)
                 aux = aux.siguiente
-            return camino, nodo_final.distancia
+            return resultado, nodo_final.distancia #Retorna el camino y la distancia
         return None, float('inf')
 
     def mostrar_recorrido_paso_a_paso(self, origen: str, destino: str):
@@ -236,21 +233,21 @@ class ListaAdyacente:
         print("-" * 50)
         
         distancia_acumulada = 0
-        for i in range(len(camino) - 1):
-            actual = camino[i]
-            siguiente = camino[i + 1]
-            
-            nodo_actual = self.buscar(actual)
-            peso = nodo_actual.buscar(siguiente).peso
+        actual = camino.inicio
+        while actual and actual.siguiente:
+            siguiente = actual.siguiente
+            nodo_actual = self.buscar(actual.nodo)
+            peso = nodo_actual.buscar(siguiente.nodo).peso
             distancia_acumulada += peso
             
-            print(f"Paso {i + 1}: {actual} -> {siguiente}")
+            print(f"Paso: {actual.nodo} -> {siguiente.nodo}")
             print(f"Distancia del tramo: {peso}")
             print(f"Distancia acumulada: {distancia_acumulada}")
             print("-" * 50)
+            actual = actual.siguiente
         
         print(f"\nResumen del recorrido:")
-        print(f"Ruta completa: {' -> '.join(camino)}")
+        print(f"Ruta completa: {camino.convertir_a_string()}")
         print(f"Distancia total: {distancia_total}")
 
     def visualizar_recorrido_lista(self, origen: str, destino: str):
@@ -267,25 +264,34 @@ class ListaAdyacente:
         
         grafica.attr('node', shape='box', style='filled', color='lightblue')
         
-        for i, nodo in enumerate(camino):
+        i = 0
+        actual = camino.inicio
+        prev_node_id = None
+        
+        while actual:
             nodo_id = f'nodo_{i}'
             
-            if i < len(camino) - 1:
-                siguiente = camino[i + 1]
-                nodo_actual = self.buscar(nodo)
-                peso = nodo_actual.buscar(siguiente).peso
-                label = f"{nodo}\nDistancia al siguiente: {peso}"
+            if actual.siguiente:
+                siguiente = actual.siguiente
+                nodo_actual = self.buscar(actual.nodo)
+                peso = nodo_actual.buscar(siguiente.nodo).peso
+                label = f"{actual.nodo}\nDistancia al siguiente: {peso}"
             else:
-                label = nodo
+                label = actual.nodo
             
             grafica.node(nodo_id, label)
             
             if i == 0:
                 grafica.edge('invisible', nodo_id)
             else:
-                grafica.edge(f'nodo_{i-1}', nodo_id)
+                grafica.edge(prev_node_id, nodo_id)
+            
+            prev_node_id = nodo_id
+            actual = actual.siguiente
+            i += 1
         
         grafica.render()
+        
 
 ##Zona de pruebas------------------------------------------------------------------------------------------------------------
 ##Zona de pruebas------------------------------------------------------------------------------------------------------------

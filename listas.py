@@ -1,6 +1,5 @@
 from clases import Cliente, Vehiculo, Viaje
 import os
-
 #--------------------------------------------------------------
 #AQUÍ SE CREARA LA ----- LISTA SIMPLE------
 class nodoListaSimple: #El nodo de la lista simple
@@ -40,7 +39,7 @@ class listaSimple:
     def insertar(self, valor:Viaje):
         nuevoNodo:nodoListaSimple = nodoListaSimple(valor)
         if self.__tamano==0:
-            nuevoNodo.getValor().setID(1)
+            nuevoNodo.getValor().setId(0)
             self.__inicio = nuevoNodo
             self.__fin = nuevoNodo
         else:
@@ -49,7 +48,7 @@ class listaSimple:
             while aux.getSiguiente() != None:
                 aux = aux.getSiguiente()
                 id+=1
-            nuevoNodo.getValor().setID(id+1)
+            nuevoNodo.getValor().setId(id+1)
             aux.setSiguiente(nuevoNodo)
             self.__fin=nuevoNodo
         self.__tamano += 1
@@ -103,13 +102,9 @@ class listaSimple:
             reporte += f"Origen: {aux.getValor().getOrigen()}\\l"
             reporte += f"Destino: {aux.getValor().getDestino()}\\l"
             reporte += f"Fecha y Hora de Inicio: {aux.getValor().getFechaHoraInicio()}\\l"
-            reporte += f"DPI del Cliente: {aux.getValor().getCliente().getDPI()}\\l"
-            reporte += f"Nombre del Cliente: {aux.getValor().getCliente().getNombre()}\\l"
-            reporte += f"Placa del Vehículo: {aux.getValor().getVehiculo().getPlaca()}\\l"
-            reporte += f"Modelo del Vehículo: {aux.getValor().getVehiculo().getModelo()}\\l"
-            reporte += f"Origen: {aux.getValor().getRuta().getOrigen()}\\l"
-            reporte += f"Destino: {aux.getValor().getRuta().getDestino()}\\l"
-            reporte += f"Tiempo de la Ruta: {aux.getValor().getRuta().getTiempoRuta()}\\l"
+            reporte += f"DPI del Cliente: {aux.getValor().getCliente()}\\l"
+            reporte += f"Placa del Vehículo: {aux.getValor().getVehiculo()}\\l"
+            reporte += f"Tiempo de la Ruta: {aux.getValor().getTiempoRuta()}\\l"
             reporte += "}}\"];\n"
 
             # Conecto los nodos

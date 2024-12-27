@@ -109,33 +109,6 @@ class Vehiculo:
     def setPPS(self,pps:float):
         self.__pps=pps
 ```
-#### Ruta
-Representa una ruta con un origen, un destino y un tiempo de ruta.
-```python
-class Ruta:
-    def __init__(self, origen:str, destino:str, tiempoRuta:float):
-        self.origen=origen
-        self.destino=destino
-        self.tiempoRuta=tiempoRuta
-    #getters y setters
-    def getOrigen(self):
-        return self.origen
-    
-    def getDestino(self):
-        return self.destino
-    
-    def getTiempoRuta(self):
-        return self.tiempoRuta
-    
-    def setOrigen(self,origen:str):
-        self.origen=origen
-
-    def setDestino(self,destino:str):
-        self.destino=destino
-
-    def setTiempoRuta(self,tiempoRuta:float):
-        self.tiempoRuta=tiempoRuta
-```
 #### Viaje
 Representa un viaje con atributos como ID (generado automáticamente), origen, destino, fecha y hora de inicio, cliente, vehículo y ruta.
 ```python

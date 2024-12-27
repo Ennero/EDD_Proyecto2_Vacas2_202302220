@@ -1,29 +1,33 @@
-digraph Grafo {
+graph Grafo {
 	node [color=lightsalmon style=filled]
 	edge [color=red style=dotted]
 	rankdir=LR size="8,5"
 	node [shape=circle]
-	edge [dir=none]
-	A
-	A -> B [label=5]
-	A -> C [label=7]
-	B
-	B -> A [label=5]
-	B -> C [label=2]
-	B -> D [label=4]
-	C
-	C -> A [label=7]
-	C -> B [label=2]
-	C -> D [label=1]
-	C -> E [label=3]
-	D
-	D -> B [label=4]
-	D -> C [label=1]
-	D -> E [label=8]
-	D -> F [label=6]
-	E
-	E -> C [label=3]
-	E -> D [label=8]
-	F
-	F -> D [label=6]
+	Oviedo
+	Oviedo -- Bilbao [label=304.0]
+	Bilbao
+	Bilbao -- Oviedo [label=304.0]
+	Bilbao -- Zaragoza [label=324.0]
+	Zaragoza
+	Zaragoza -- Bilbao [label=324.0]
+	Zaragoza -- Barcelona [label=6.0]
+	Madrid
+	Madrid -- Barcelona [label=10.0]
+	Madrid -- Valencia [label=7.0]
+	Barcelona
+	Barcelona -- Madrid [label=10.0]
+	Barcelona -- Valencia [label=5.0]
+	Barcelona -- Zaragoza [label=6.0]
+	Valencia
+	Valencia -- Madrid [label=7.0]
+	Valencia -- Barcelona [label=5.0]
+	Valencia -- Sevilla [label=12.0]
+	Sevilla
+	Sevilla -- Valencia [label=12.0]
+	Sevilla -- Granada [label=4.0]
+	Sevilla -- "Córdoba" [label=3.0]
+	Granada
+	Granada -- Sevilla [label=4.0]
+	"Córdoba"
+	"Córdoba" -- Sevilla [label=3.0]
 }

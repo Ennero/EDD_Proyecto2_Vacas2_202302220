@@ -7,7 +7,7 @@ from arbolito import ArbolB
 from listas import listaCircularDoble, listaSimple,nodoListaCircularDoble,nodoListaSimple
 import clases
 from ListaAdyacente import ListaAdyacente,NodoListaAdyacente,NodoRuta
-
+from datetime import datetime
 
 #Inicializo las estructuras
 vehículos: ArbolB=ArbolB(5)
@@ -54,8 +54,8 @@ def cargarRutas():
             datos=re.search(patroRutas, ruta)
             if datos:
                 #Ingreso los valores del grupo dentro de variables
-                origen=datos.group(1)
-                destino=datos.group(2)
+                origen=(datos.group(1)).rstrip()
+                destino=datos.group(2).rstrip()
                 tiempo=float(datos.group(3))
                 if origen==None or destino==None or tiempo==None:
                     #Solo es para trabajar con el último
@@ -199,10 +199,39 @@ def crearVehículo():
         #Lo inserto en el arbol B
         vehículos.insertarValor(carriñoso)
         info.config(text="Vehículo creado correctamente", foreground="green", font=("Arial", 9, "italic"))
+        messagebox.showinfo("Creación de vehículo", "Vehículo creado correctamente.")
 
 def crearViaje():
     global viajes
     info.config(text="Creando viaje...", foreground="black", font=("Arial", 9, "italic"))
+    #Muestro los clientes y los vehículos
+    mostrarClientes()
+    mostrarVehículos()
+
+
+    #Solicito los datos para crear el viaje
+    dpi=simpledialog.askstring("Creación de viaje", "Ingrese el DPI del cliente:",parent=ventana)
+    placa=simpledialog.askstring("Creación de viaje", "Ingrese la PLACA del vehículo:",parent=ventana)
+    origen=simpledialog.askstring("Creación de viaje", "Ingrese el ORIGEN del viaje:",parent=ventana)
+    destino=simpledialog.askstring("Creación de viaje", "Ingrese el DESTINO del viaje:",parent=ventana)
+
+
+    if dpi==None or placa==None or origen==None or destino==None:
+        messagebox.showerror("Error", "No se pudo crear el viaje.")
+        info.config(text="Error al crear el viaje", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        #Creo el viaje
+        pasos,tiempoRuta=rutas.encontrarRutaCorta(origen, destino)
+
+        fechaActual=datetime.now()
+        fechaFormateada=fechaActual.strftime("%d/%m/%Y %H:%M")
+        viajecito:clases.Viaje=clases.Viaje(origen, destino,fechaFormateada, dpi, placa, pasos, tiempoRuta)
+        viajes.insertar(viajecito)
+        info.config(text="Viaje creado correctamente", foreground="green", font=("Arial", 9, "italic"))
+        messagebox.showinfo("Creación de viaje", "Viaje creado correctamente.")
+    #Creo la instancia del viaje
+    
 
 #Fin de funciones para crear--------------------------------------------------------------
 
@@ -321,11 +350,11 @@ def mostrarVehículos():
     info.config(text="Mostrando vehículos...", foreground="black", font=("Arial", 9, "italic"))
     mostrar:str=""
     mostrar=vehículos.stringVehiculos()
-    entrada.config(state=tk.NORMAL)
-    entrada.delete(1.0, tk.END)
-    entrada.insert(tk.END, mostrar)
+    entrada1.config(state=tk.NORMAL)
+    entrada1.delete(1.0, tk.END)
+    entrada1.insert(tk.END, mostrar)
     print(mostrar)
-    entrada.config(state=tk.DISABLED)
+    entrada1.config(state=tk.DISABLED)
 #Fin de funciones para mostrar información------------------------------------------------
 
 #Funciones para mostrar estructura de datos------------------------------------------------
@@ -341,6 +370,8 @@ def estructuraVehículos():
 
 def estructuraViajes():
     global viajes
+    info.config(text="Mostrando estructura de datos de viajes...", foreground="black", font=("Arial", 9, "italic"))
+    viajes.generarEstructura()
     pass
 
 
@@ -419,22 +450,49 @@ botonRutas.config(background="white", foreground="blue", font=("Arial", 14, "bol
 
 
 #DERECHA---------------------------------------------------------------------------------------------------------------------------
-#Creo el editor de texto
-info=tk.Label(frame2,text=" ") #Aquí se mostrará la información de los clientes, vehículos y viajes
-info.pack()
-info.config(foreground="red", font=("Arial", 9, "italic"))
-edittxt=tk.Label(frame2, text="Visualice la información aquí")
-edittxt.pack()
-edittxt.config(foreground="black", font=("Arial", 14, "bold"))
+#Creo el editor de texto para los clientes
 
-scroll=tk.Scrollbar(frame2, orient="vertical")
+#Creo otro frame para organizar las entradas
+fram32 = tk.Frame(frame2)
+fram32.pack(side="top")
+fram32.config(border=2, relief="groove", borderwidth=5)
+
+fram33 = tk.Frame(frame2)
+fram33.pack(side="bottom")
+fram33.config(border=2, relief="groove", borderwidth=5)
+
+
+info = tk.Label(frame2, text=" ")  # Aquí se mostrará la información de los clientes, vehículos y viajes
+info.pack(side="bottom")
+info.config(foreground="red", font=("Arial", 9, "italic"))
+
+edittxt = tk.Label(frame2, text="Visualice la información aquí")
+edittxt.pack()
+edittxt.config(foreground="black", font=("Arial", 16, "bold"))
+
+# Primera entrada con scroll
+scroll = tk.Scrollbar(fram32, orient="vertical")
 scroll.pack(side="right", fill="y")
 
-entrada = tk.Text(frame2, height=26, width=75, yscrollcommand=scroll.set)
-entrada.pack(side="left", fill="both", expand=True)
+entrada = tk.Text(fram32, height=11, width=75, yscrollcommand=scroll.set)
+entrada.pack(side="bottom", fill="both", expand=True)
 scroll.config(command=entrada.yview)
-
 entrada.config(font=("consolas", 11), state=tk.DISABLED)
+
+# Segunda entrada con scroll
+scroll1 = tk.Scrollbar(fram33, orient="vertical")
+scroll1.pack(side="right", fill="y")
+
+entrada1 = tk.Text(fram33, height=11, width=75, yscrollcommand=scroll1.set)
+entrada1.pack(side="bottom", fill="both", expand=True)
+scroll1.config(command=entrada1.yview)
+entrada1.config(font=("consolas", 11), state=tk.DISABLED)
+
+
+
+
+
+
 #FIN DE LA PARTE DERECHA--------------------------------------------------------------------------------------------------------------------------
 
 

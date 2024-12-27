@@ -1,0 +1,9 @@
+digraph ListaBaby {
+rankdir=LR;node [shape=record, style=filled, fillcolor=lightsalmon, margin=0.2];
+edge [style=solid, color=red];
+graph [ranksep=1.5, nodesep=1];
+graph [label="", fontsize=20, fontcolor=black];
+"0" [label="{ID: 0\lOrigen: Oviedo\lDestino: Bilbao\lFecha y Hora de Inicio: 27/12/2024 13:06\lDPI del Cliente: 161026412514\lPlaca del Vehículo: 015PAN\lTiempo de la Ruta: 304.0\l}}"];
+"0" -> "1";
+"1" [label="{ID: 1\lOrigen: Zaragoza\lDestino: Granada\lFecha y Hora de Inicio: 27/12/2024 13:07\lDPI del Cliente: 165396428767\lPlaca del Vehículo: 099UCA\lTiempo de la Ruta: 27.0\l}}"];
+}

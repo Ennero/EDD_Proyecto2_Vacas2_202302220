@@ -1,4 +1,5 @@
 
+
 #Tengo pensado colocar aquí todas las clases que se necesiten para el proyecto que tendrán carga masiva------------------------------------
 
 
@@ -83,7 +84,7 @@ class Vehiculo:
         self.__pps=pps
 #------------------------------------------------------------------------------------------
 #se guardará en un grafo
-class Ruta:
+'''class Ruta:
     def __init__(self, origen:str, destino:str, tiempoRuta:float):
         self.origen=origen
         self.destino=destino
@@ -105,7 +106,7 @@ class Ruta:
         self.destino=destino
 
     def setTiempoRuta(self,tiempoRuta:float):
-        self.tiempoRuta=tiempoRuta
+        self.tiempoRuta=tiempoRuta'''
 #------------------------------------------------------------------------------------------
 
 
@@ -114,15 +115,29 @@ class Ruta:
 
 #va a estar almacenado en una lista circular simple
 class Viaje:
-    def __init__(self,origen:str,destino:str, fechaHoraInicio:str, cliente:Cliente, vehiculo:Vehiculo, ruta:Ruta):
+    def __init__(self,origen:str,destino:str, fechaHoraInicio:str, cliente:str, vehiculo:str, pasos, tiempoRuta):
         self.id=9999 #Este id se generará automáticamente
         self.origen=origen
         self.destino=destino
         self.fechaHoraInicio=fechaHoraInicio
         self.cliente=cliente
         self.vehiculo=vehiculo
-        self.ruta=ruta #En realidad debe ser la lista de las rutas cortas que tengo que hacer (es simple)
+        self.pasos=pasos
+        self.tiempoRuta=tiempoRuta
+        #self.ruta=ruta #En realidad debe ser la lista de las rutas cortas que tengo que hacer (es simple)
     #getters y setters
+    def getPasos(self):
+        return self.pasos
+    
+    def setPasos(self,pasos):
+        self.pasos=pasos
+
+    def getTiempoRuta(self):
+        return self.tiempoRuta
+    
+    def setTiempoRuta(self,tiempoRuta):
+        self.tiempoRuta=tiempoRuta
+
     def getId(self):
         return self.id
 
@@ -141,8 +156,11 @@ class Viaje:
     def getVehiculo(self):
         return self.vehiculo
     
-    def getRuta(self):
-        return self.ruta
+    def getTiempoRuta(self):
+        return self.tiempoRuta
+    
+    def setTiempoRuta(self,tiempoRuta:float):
+        self.tiempoRuta=tiempoRuta
     
     def setId(self,id:int):
         self.id=id
@@ -156,13 +174,15 @@ class Viaje:
     def setFechaHoraInicio(self,fechaHoraInicio:str):
         self.fechaHoraInicio=fechaHoraInicio
 
-    def setCliente(self,cliente:Cliente):
+    def setCliente(self,cliente:str):
         self.cliente=cliente
 
-    def setVehiculo(self,vehiculo:Vehiculo):
+    def setVehiculo(self,vehiculo:str):
         self.vehiculo=vehiculo
 
-    def setRuta(self,ruta:Ruta):
-        self.ruta=ruta
+    
+
+    '''def setRuta(self,ruta:Ruta):
+        self.ruta=ruta'''
 #------------------------------------------------------------------------------------------
 
