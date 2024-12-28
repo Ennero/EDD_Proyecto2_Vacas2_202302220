@@ -1,8 +1,8 @@
 graph Grafo {
-	node [color=lightsalmon style=filled]
-	edge [color=red style=dotted]
-	rankdir=LR size="8,5"
-	node [shape=circle]
+	node [color=lightsalmon fontsize=9 style=filled]
+	edge [color=red fontsize=8 style=dotted]
+	rankdir=LR
+	concentrate=true
 	Oviedo
 	Oviedo -- Bilbao [label=304.0]
 	Bilbao

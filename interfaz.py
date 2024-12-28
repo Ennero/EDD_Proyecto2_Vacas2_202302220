@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import Label, PhotoImage, messagebox,simpledialog,filedialog,Tk
+from tkinter import ttk
 from PIL import Image, ImageTk
 import subprocess
 import re
@@ -29,9 +30,12 @@ def limpiar():
     entrada.config(state=tk.NORMAL)
     entrada.delete(1.0, tk.END)
     entrada.config(state=tk.DISABLED)
+
+    entrada1.config(state=tk.NORMAL)
+    entrada1.delete(1.0, tk.END)
+    entrada1.config(state=tk.DISABLED)
 #Fin de botones inútiles-----------------------------------------------------------------------------------------------------
     
-
 def cargarRutas():
     global rutas,rutaGrafica
     info.config(text="Cargando rutas...", foreground="black", font=("Arial", 9, "italic"))
@@ -202,7 +206,7 @@ def crearVehículo():
         messagebox.showinfo("Creación de vehículo", "Vehículo creado correctamente.")
 
 def crearViaje():
-    global viajes
+    global viajes,vehículos,clientes
     info.config(text="Creando viaje...", foreground="black", font=("Arial", 9, "italic"))
     #Muestro los clientes y los vehículos
     mostrarClientes()
@@ -222,12 +226,22 @@ def crearViaje():
         return
     else:
         #Creo el viaje
-        pasos,tiempoRuta=rutas.encontrarRutaCorta(origen, destino)
 
+        #Aumento el contador de los viajes de cada auto y de cada cliente
+        clientecito=clientes.encontrarCliente(dpi)
+        clientecito.getValor().setViajes(clientecito.getValor().getViajes()+1)
+        vehiculito=vehículos.buscarValor(placa)
+        vehiculito.setViajes(vehiculito.getViajes()+1)
+
+        #Busco la ruta más corta
+        pasos,tiempoRuta=rutas.encontrarRutaCorta(origen, destino)
         fechaActual=datetime.now()
         fechaFormateada=fechaActual.strftime("%d/%m/%Y %H:%M")
-        viajecito:clases.Viaje=clases.Viaje(origen, destino,fechaFormateada, dpi, placa, pasos, tiempoRuta)
+        
+        #Creo el viaje
+        viajecito:clases.Viaje=clases.Viaje(origen, destino,fechaFormateada, clientecito.getValor(), vehiculito, pasos, tiempoRuta)
         viajes.insertar(viajecito)
+
         info.config(text="Viaje creado correctamente", foreground="green", font=("Arial", 9, "italic"))
         messagebox.showinfo("Creación de viaje", "Viaje creado correctamente.")
     #Creo la instancia del viaje
@@ -355,7 +369,154 @@ def mostrarVehículos():
     entrada1.insert(tk.END, mostrar)
     print(mostrar)
     entrada1.config(state=tk.DISABLED)
+
+def mostrarViajes():
+    global viajes
+    info.config(text="Mostrando viajes...", foreground="black", font=("Arial", 9, "italic"))
+    mostrar:str=""
+
+    #Ante de todo limpio ambos para no confudirme
+    limpiar()
+    mostrar=viajes.stringViajes()
+    entrada.config(state=tk.NORMAL)
+    entrada.delete(1.0, tk.END)
+    entrada.insert(tk.END, mostrar)
+    print(mostrar)
+    entrada.config(state=tk.DISABLED)
 #Fin de funciones para mostrar información------------------------------------------------
+
+#Funciones para reportes----------------------------------------------------------------
+
+def rutaDeUnViaje():
+    global viajes
+    info.config(text="Mostrando ruta de un viaje...", foreground="black", font=("Arial", 9, "italic"))
+    mostrarViajes()
+    #Solicito el id del viaje
+    id=simpledialog.askstring("Ruta de un viaje", "Ingrese el ID del viaje:",parent=ventana)
+    if id==None:
+        messagebox.showerror("Error", "No se pudo mostrar la ruta del viaje.")
+        info.config(text="Error al mostrar la ruta del viaje", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        #Busco el viaje
+        viaje:clases.Viaje=viajes.encontrar(int(id))
+        if viaje==None:
+            messagebox.showerror("Error", "No se encontró el viaje.")
+            info.config(text="Viaje no encontrado", foreground="red", font=("Arial", 9, "italic"))
+            return
+        else:
+            #Muestro la ruta del viaje
+            origen=viaje.origen
+            destino=viaje.destino
+            rutas.visualizar_recorrido_lista(origen, destino)
+            info.config(text="Ruta del viaje mostrada correctamente", foreground="green", font=("Arial", 9, "italic"))
+
+
+def topVehiculos():
+    global viajes
+    eliminarSegundaEntrada()
+    eliminarTablita()
+    viajes.ordenarPorVehiculos() #Ordeno los viajes de acuerdo a los luagares por los que se pasó
+    info.config(text="Mostrando top de vehículos...", foreground="black", font=("Arial", 9, "italic"))
+
+    tabla= ttk.Treeview(fram33,columns=("Viajes","Placa","Marca","Modelo","Precio" ), show="headings")
+    
+    tabla.heading("Viajes", text="Viajes")
+    tabla.heading("Placa", text="Placa")
+    tabla.heading("Marca", text="Marca")
+    tabla.heading("Modelo", text="Modelo")
+    tabla.heading("Precio", text="Precio")
+
+    aux=viajes.getInicio()
+    contador: int=0
+    while aux and contador<5:
+        tabla.insert("", tk.END, values=(str(aux.getValor().getVehiculo().getViajes()),aux.getValor().getVehiculo().getPlaca(), aux.getValor().getVehiculo().getMarca(), aux.getValor().getVehiculo().getModelo(), aux.getValor().getVehiculo().getPPS()))
+        aux=aux.getSiguiente()
+        contador+=1
+
+    tabla.pack(side="bottom", fill="both", expand=True)
+    
+def topClientes():
+    global viajes
+    eliminarSegundaEntrada()
+    eliminarTablita()
+    viajes.ordenarPorClientes() #Ordeno los viajes de acuerdo a los luagares por los que se pasó
+    info.config(text="Mostrando top de Clientes...", foreground="black", font=("Arial", 9, "italic"))
+
+    
+    tabla= ttk.Treeview(fram33,columns=( "Viajes","DPI", "nombreCliente", "Genero"), show="headings")
+    
+    tabla.heading("Viajes", text="Viajes")
+    tabla.heading("DPI", text="DPI")
+    tabla.heading("nombreCliente", text="Nombre")
+    tabla.heading("Genero", text="Genero")    
+
+    aux=viajes.getInicio()
+    contador: int=0
+    while aux and contador<5:
+        tabla.insert("", tk.END, values=(aux.getValor().getCliente().getViajes(), aux.getValor().getCliente().getDPI(), aux.getValor().getCliente().getNombre() + " " + aux.getValor().getCliente().getApellido(), aux.getValor().getCliente().getGenero()))
+        aux=aux.getSiguiente()
+        contador+=1
+
+    tabla.pack(side="bottom", fill="both", expand=True)
+
+def topGanancias():
+    global viajes
+    eliminarSegundaEntrada()
+    eliminarTablita()
+    viajes.ordenarPorGanancias() #Ordeno los viajes de acuerdo a los luagares por los que se pasó
+    info.config(text="Mostrando top de ganancias...", foreground="black", font=("Arial", 9, "italic"))
+    
+    tabla= ttk.Treeview(fram33,columns=("Ganancias","id","origen","destino","tiempo","cliente","vehículo"), show="headings")
+
+    tabla.heading("Ganancias", text="Ganancias")
+    tabla.heading("id", text="ID viaje")
+    tabla.heading("origen", text="Origen")
+    tabla.heading("destino", text="Destino")
+    tabla.heading("tiempo", text="Tiempo")
+    tabla.heading("cliente", text="Cliente")
+    tabla.heading("vehículo", text="Vehículo")
+    
+
+    aux=viajes.getInicio()
+    contador: int=0
+    while aux and contador<5:
+        tabla.insert("", tk.END, values=(str(int(aux.getValor().getTiempoRuta())*int(aux.getValor().getVehiculo().getPPS())),aux.getValor().getId(), aux.getValor().getOrigen(), aux.getValor().getDestino(), aux.getValor().getTiempoRuta(), aux.getValor().getCliente().getNombre(), aux.getValor().getVehiculo().getPlaca()))
+        aux=aux.getSiguiente()
+        contador+=1
+
+    tabla.pack(side="bottom", fill="both", expand=True)
+
+
+def topViajesLargos():
+    global viajes
+    eliminarSegundaEntrada()
+    eliminarTablita()
+    viajes.ordenarPorLargo() #Ordeno los viajes de acuerdo a los luagares por los que se pasó
+    info.config(text="Mostrando top de viajes largos...", foreground="black", font=("Arial", 9, "italic"))
+
+    
+    tabla= ttk.Treeview(fram33,columns=("Destinos","id","cliente", "vehículo", "origen", "destino", "tiempo"), show="headings")
+
+    tabla.heading("Destinos", text="Destinos")
+    tabla.heading("id", text="ID viaje")
+    tabla.heading("origen", text="Origen")
+    tabla.heading("destino", text="Destino")
+    tabla.heading("tiempo", text="Tiempo")
+    tabla.heading("cliente", text="Cliente")
+    tabla.heading("vehículo", text="Vehículo")
+    
+
+    aux=viajes.getInicio()
+    contador: int=0
+    while aux and contador<5:
+        tabla.insert("", tk.END, values=(str(aux.getValor().getPasos().tamano),aux.getValor().getId(), aux.getValor().getOrigen(), aux.getValor().getDestino(), aux.getValor().getTiempoRuta(), aux.getValor().getCliente().getNombre(), aux.getValor().getVehiculo().getPlaca()))
+        aux=aux.getSiguiente()
+        contador+=1
+
+    tabla.pack(side="bottom", fill="both", expand=True)
+
+#Fin de funcinoes para reportes----------------------------------------------------------------
 
 #Funciones para mostrar estructura de datos------------------------------------------------
 def estructuraClientes():
@@ -372,11 +533,19 @@ def estructuraViajes():
     global viajes
     info.config(text="Mostrando estructura de datos de viajes...", foreground="black", font=("Arial", 9, "italic"))
     viajes.generarEstructura()
-    pass
-
 
 #Fin de funciones para mostrar estructura de datos------------------------------------------
 
+#Generación de tabla :)---------------------------------------------------------------------
+def eliminarTablita():
+    tabla.destroy()
+
+def eliminarSegundaEntrada():
+    entrada1.destroy()
+    scroll1.destroy()
+
+
+#Fin de generación de tabla------------------------------------------------------------------
     
 #INTEFAZ GRÁFICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 #----------------------------------------------------------------------------
@@ -431,7 +600,7 @@ edittxt.config(foreground="black", font=("Arial", 14, "bold"))
 #Imagen de la grafica
 #Le coloco un path a la grafica
 imagen_original = Image.open(rutaGrafica)
-imagen_redimensionada = imagen_original.resize((600, 400), Image.Resampling.LANCZOS)  # Redimensionar a 600x400
+imagen_redimensionada = imagen_original.resize((550, 400), Image.Resampling.LANCZOS)  # Redimensionar a 600x400
 graficaImg = ImageTk.PhotoImage(imagen_redimensionada)
 
 # Mostrar la imagen en un Label
@@ -466,10 +635,6 @@ info = tk.Label(frame2, text=" ")  # Aquí se mostrará la información de los c
 info.pack(side="bottom")
 info.config(foreground="red", font=("Arial", 9, "italic"))
 
-edittxt = tk.Label(frame2, text="Visualice la información aquí")
-edittxt.pack()
-edittxt.config(foreground="black", font=("Arial", 16, "bold"))
-
 # Primera entrada con scroll
 scroll = tk.Scrollbar(fram32, orient="vertical")
 scroll.pack(side="right", fill="y")
@@ -488,7 +653,9 @@ entrada1.pack(side="bottom", fill="both", expand=True)
 scroll1.config(command=entrada1.yview)
 entrada1.config(font=("consolas", 11), state=tk.DISABLED)
 
-
+#**************************************************************
+tabla= ttk.Treeview(fram33)
+#**************************************************************
 
 
 
@@ -587,10 +754,16 @@ nuevo = tk.Button(contenedorViajes, text="Crear", height="1", width="22", comman
 nuevo.pack()
 nuevo.config(background="white", foreground="black", font=("Arial", 10, "bold"))
 
+#Creación del botón para mostrar información
+mostrarInformacion=tk.Button(contenedorViajes, text="Mostrar Información", height="1", width="22", command=mostrarViajes)
+mostrarInformacion.pack()
+mostrarInformacion.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+
 #Creación del botón para Mostrar Estructura de Datos
 guardoComo = tk.Button(contenedorViajes, text="Mostrar Estructura de Datos", height="1", width="22", command=estructuraViajes)
 guardoComo.pack()
 guardoComo.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+
 
 
 #Menu para REPORTES---------------------------------------------------------------------------------------------------------------------------
@@ -601,25 +774,35 @@ tituloReportes.pack(side="top")
 
 #Creación de los botones de los reportes
 #TopViajes en destino
-topViajes = tk.Button(contenedorReportes, text="Top 5 Viajes Largos", height="1", width="22")
+topViajes = tk.Button(contenedorReportes, text="Top 5 Viajes Largos", height="1", width="22", command=topViajesLargos)
 topViajes.pack()
 topViajes.config(background="white", foreground="black", font=("Arial", 10, "bold"))
 #TopGanacias en tiempo
-topGanancias = tk.Button(contenedorReportes, text="Top 5 Ganancias", height="1", width="22")
-topGanancias.pack()
-topGanancias.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+topoGanancias = tk.Button(contenedorReportes, text="Top 5 Ganancias", height="1", width="22", command=topGanancias)
+topoGanancias.pack()
+topoGanancias.config(background="white", foreground="black", font=("Arial", 10, "bold"))
 #TopClientes
-topClientes = tk.Button(contenedorReportes, text="Top 5 Clientes", height="1", width="22")
-topClientes.pack()
-topClientes.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+topoClientes = tk.Button(contenedorReportes, text="Top 5 Clientes", height="1", width="22", command=topClientes)
+topoClientes.pack()
+topoClientes.config(background="white", foreground="black", font=("Arial", 10, "bold"))
 #TopVehículos
-topVehiculos = tk.Button(contenedorReportes, text="Top 5 Vehículos", height="1", width="22")
-topVehiculos.pack()
-topVehiculos.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+topoVehiculos = tk.Button(contenedorReportes, text="Top 5 Vehículos", height="1", width="22", command=topVehiculos)
+topoVehiculos.pack()
+topoVehiculos.config(background="white", foreground="black", font=("Arial", 10, "bold"))
 #Ruta de un viaje específico
-viajeEspecifico = tk.Button(contenedorReportes, text="Ruta de un Viaje", height="1", width="22")
+viajeEspecifico = tk.Button(contenedorReportes, text="Ruta de un Viaje", height="1", width="22", command=rutaDeUnViaje)
 viajeEspecifico.pack()
 viajeEspecifico.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+
+
+
+
+
+
+
+
+
+
 
 
 #----------------------------------------------------------------------------

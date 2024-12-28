@@ -1,17 +1,18 @@
 digraph RecorridoLista {
-	rankdir=TB
-	node [height=0 shape=none width=0]
-	invisible [label=""]
-	node [color=lightblue shape=box style=filled]
-	nodo_0 [label="A
-Distancia al siguiente: 7"]
-	invisible -> nodo_0
-	nodo_1 [label="C
-Distancia al siguiente: 1"]
+	rankdir=LR
+	node [color=lightsalmon shape=box style=filled]
+	nodo_0 [label="Bilbao
+Distancia recorrida: 0"]
+	nodo_1 [label="Zaragoza
+Distancia recorrida: 324.0"]
 	nodo_0 -> nodo_1
-	nodo_2 [label="D
-Distancia al siguiente: 6"]
+	nodo_2 [label="Barcelona
+Distancia recorrida: 324.0+330.0"]
 	nodo_1 -> nodo_2
-	nodo_3 [label=F]
+	nodo_3 [label="Valencia
+Distancia recorrida: 330.0+335.0"]
 	nodo_2 -> nodo_3
+	nodo_4 [label="Sevilla
+Distancia recorrida: 347.0"]
+	nodo_3 -> nodo_4
 }

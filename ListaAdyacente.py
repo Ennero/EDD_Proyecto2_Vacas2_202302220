@@ -51,6 +51,7 @@ class ListaResultado:
     def __init__(self):
         self.inicio = None
         self.fin = None
+        self.tamano = 0
     
     def agregar(self, nodo: str):
         nuevo = NodoCamino(nodo)
@@ -60,6 +61,7 @@ class ListaResultado:
         else:
             self.fin.siguiente = nuevo
             self.fin = nuevo
+        self.tamano += 1
     
     def convertir_a_string(self):
         resultado = ""
@@ -161,11 +163,12 @@ class ListaAdyacente:
                 aux.siguiente = nuevo
 
     def generarGrafo(self):
-        grafica = graphviz.Graph('Grafo', filename='Rutas', format='png')
-        grafica.attr(rankdir='LR', size='8,5')
-        grafica.node_attr.update(color='lightsalmon', style='filled')
-        grafica.edge_attr.update(color='red', style='dotted')
-        grafica.attr('node', shape='circle')
+        grafica = graphviz.Graph('Grafo', filename='Rutas', format='png', engine="neato")
+        grafica.attr(rankdir='LR')
+        grafica.attr(concentrate='true')
+        grafica.node_attr.update(color='lightsalmon', style='filled', fontsize='9')
+        grafica.edge_attr.update(color='red', style='dotted', fontsize='8')
+        grafica.attr('node')
         aux = self.inicio
         while aux:
             grafica.node(aux.origen)
@@ -256,33 +259,36 @@ class ListaAdyacente:
             print(f"No existe ruta entre {origen} y {destino}")
             return
         
-        grafica = graphviz.Digraph('RecorridoLista', filename='RecorridoLista', format='png')
-        grafica.attr(rankdir='TB')
+        grafica = graphviz.Digraph('RecorridoLista', filename='RecorridoLista', format='pdf')
+        grafica.attr(rankdir='LR')
         
-        grafica.attr('node', shape='none', height='0', width='0')
-        grafica.node('invisible', '')
         
-        grafica.attr('node', shape='box', style='filled', color='lightblue')
+        grafica.attr('node', shape='box', style='filled', color='lightsalmon')
         
         i = 0
         actual = camino.inicio
         prev_node_id = None
-        
+        peso=0
+        prepeso=0
+        #Ciclo para recorrer la lista de nodos y generar los nodos en la gráfica
         while actual:
             nodo_id = f'nodo_{i}'
             
             if actual.siguiente:
                 siguiente = actual.siguiente
                 nodo_actual = self.buscar(actual.nodo)
-                peso = nodo_actual.buscar(siguiente.nodo).peso
-                label = f"{actual.nodo}\nDistancia al siguiente: {peso}"
+                label = f"{actual.nodo}\nDistancia recorrida: {peso}"
+                if prepeso!=0:
+                    label =f"{actual.nodo}\nDistancia recorrida: {peso}+{nodo_actual.buscar(siguiente.nodo).peso}"
+                prepeso=peso
+                peso += nodo_actual.buscar(siguiente.nodo).peso
             else:
-                label = actual.nodo
+                label = actual.nodo + "\nDistancia recorrida: " + str(peso)
             
             grafica.node(nodo_id, label)
             
             if i == 0:
-                grafica.edge('invisible', nodo_id)
+                pass
             else:
                 grafica.edge(prev_node_id, nodo_id)
             
@@ -290,12 +296,12 @@ class ListaAdyacente:
             actual = actual.siguiente
             i += 1
         
-        grafica.render()
+        grafica.render(view=True)
         
 
 ##Zona de pruebas------------------------------------------------------------------------------------------------------------
 ##Zona de pruebas------------------------------------------------------------------------------------------------------------
-listita=ListaAdyacente()
+'''listita=ListaAdyacente()
 # Insertamos las rutas en ambas direcciones
 listita.insertarRuta("A","B",5)
 listita.insertarRuta("A","C",7)
@@ -317,7 +323,7 @@ listita.visualizar_recorrido_lista("A", "F")
     
 
 
-
+'''
 
 ##Aquí voy a meter la cosa depués para que se pueda encontrar la ruta más corta
 

@@ -3,7 +3,7 @@ import os
 #--------------------------------------------------------------
 #AQUÍ SE CREARA LA ----- LISTA SIMPLE------
 class nodoListaSimple: #El nodo de la lista simple
-    def __init__(self, valor):
+    def __init__(self, valor:Viaje):
         self.__valor:Viaje = valor
         self.__siguiente:nodoListaSimple = None
 
@@ -82,6 +82,88 @@ class listaSimple:
                 self.__fin = aux
         self.__tamano -= 1
 
+
+    def crearCopiaOrdenada(self):
+        if self.__tamano == 0: return None
+        listaCopia:listaSimple = listaSimple()
+        aux:nodoListaSimple = self.__inicio
+
+#Aquí coloca las funciones de ordenamiento para los reportes :)
+#-----------------------------------------------------------------------------
+
+    def ordenarPorVehiculos(self):
+        if self.__tamano <= 1: return
+            
+        for i in range(self.__tamano):
+            actual = self.__inicio
+            siguiente = actual.getSiguiente()
+            
+            for j in range(self.__tamano - i - 1):
+                # Si el actual es mayor que el siguiente, intercambiamos los valores
+                if actual.getValor().getVehiculo().getViajes() < siguiente.getValor().getVehiculo().getViajes() :
+                    # Intercambiamos solo los valores, no los nodos
+                    valorTemp = actual.getValor()
+                    actual.setValor(siguiente.getValor())
+                    siguiente.setValor(valorTemp)
+                actual = siguiente
+                siguiente = siguiente.getSiguiente()
+    
+    def ordenarPorClientes(self):
+        if self.__tamano <= 1: return
+
+        for i in range(self.__tamano):
+            actual = self.__inicio
+            siguiente = actual.getSiguiente()
+            
+            for j in range(self.__tamano -i-1):
+                # Si el actual es mayor que el siguiente, intercambiamos los valores
+                if actual.getValor().getCliente().getViajes() < siguiente.getValor().getCliente().getViajes():
+                    # Intercambiamos solo los valores, no los nodos
+                    valorTemp = actual.getValor()
+                    actual.setValor(siguiente.getValor())
+                    siguiente.setValor(valorTemp)
+                actual = siguiente
+                siguiente = siguiente.getSiguiente()
+
+
+    def ordenarPorGanancias(self):
+        if self.__tamano <= 1: return
+
+        for i in range(self.__tamano):
+            actual = self.__inicio
+            siguiente = actual.getSiguiente()
+            
+            for j in range(self.__tamano -i-1):
+                # Si el actual es mayor que el siguiente, intercambiamos los valores
+                if int(actual.getValor().getVehiculo().getPPS()) * int(actual.getValor().getTiempoRuta()) < int(siguiente.getValor().getVehiculo().getPPS()) * int(siguiente.getValor().getTiempoRuta()):
+                    # Intercambiamos solo los valores, no los nodos
+                    valorTemp = actual.getValor()
+                    actual.setValor(siguiente.getValor())
+                    siguiente.setValor(valorTemp)
+                actual = siguiente
+                siguiente = siguiente.getSiguiente()
+
+
+    def ordenarPorLargo(self):
+        if self.__tamano <=1: return
+        
+        for i in range(self.__tamano):
+            actual = self.__inicio
+            siguiente = actual.getSiguiente()
+            
+            for j in range(self.__tamano -i-1):
+                # Si el actual es mayor que el siguiente, intercambiamos los valores
+                if actual.getValor().getPasos().tamano < siguiente.getValor().getPasos().tamano:
+                    # Intercambiamos solo los valores, no los nodos
+                    valorTemp = actual.getValor()
+                    actual.setValor(siguiente.getValor())
+                    siguiente.setValor(valorTemp)
+                actual = siguiente
+                siguiente = siguiente.getSiguiente()
+
+#-----------------------------------------------------------------------------
+
+
     #Función para generar la estrcutura de la lista simple
     def generarEstructura(self):
         #Si no hay nada no genero nada :)
@@ -102,8 +184,10 @@ class listaSimple:
             reporte += f"Origen: {aux.getValor().getOrigen()}\\l"
             reporte += f"Destino: {aux.getValor().getDestino()}\\l"
             reporte += f"Fecha y Hora de Inicio: {aux.getValor().getFechaHoraInicio()}\\l"
-            reporte += f"DPI del Cliente: {aux.getValor().getCliente()}\\l"
-            reporte += f"Placa del Vehículo: {aux.getValor().getVehiculo()}\\l"
+            reporte += f"DPI del Cliente: {aux.getValor().getCliente().getDPI()}\\l"
+            reporte += f"Nombre del Cliente: {aux.getValor().getCliente().getNombre()} {aux.getValor().getCliente().getApellido()}\\l"
+            reporte += f"Placa del Vehículo: {aux.getValor().getVehiculo().getPlaca()}\\l"
+            reporte += f"Marca del Vehículo: {aux.getValor().getVehiculo().getMarca()}\\l"
             reporte += f"Tiempo de la Ruta: {aux.getValor().getTiempoRuta()}\\l"
             reporte += "}}\"];\n"
 
@@ -121,7 +205,16 @@ class listaSimple:
         # Ejecutar el comando para generar el PDF
         os.system("dot -Tpdf EstructuraListaCircularSimple.dot -o EstructuraListaCircularSimple.pdf && start EstructuraListaCircularSimple.pdf")
 
-
+    def stringViajes(self)->str:
+        aux:nodoListaSimple = self.__inicio
+        if aux == None: return "No hay viajes"
+        cadena:str = ""
+        while aux != self.__fin:
+            cadena+="ID: "+str(aux.getValor().getId())+" - "+aux.getValor().getOrigen() + " - " + aux.getValor().getDestino() + " - " + aux.getValor().getFechaHoraInicio() + " - " + aux.getValor().getCliente().getDPI() + " - " + aux.getValor().getVehiculo().getPlaca() + " - " + str(aux.getValor().getTiempoRuta()) + "\n"
+            aux = aux.getSiguiente()
+        cadena+="ID: "+str(aux.getValor().getId())+" - "+aux.getValor().getOrigen() + " - " + aux.getValor().getDestino() + " - " + aux.getValor().getFechaHoraInicio() + " - " + aux.getValor().getCliente().getDPI() + " - " + aux.getValor().getVehiculo().getPlaca() + " - " + str(aux.getValor().getTiempoRuta()) + "\n"
+        print(cadena)
+        return cadena
 
 
 

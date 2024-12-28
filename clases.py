@@ -1,4 +1,4 @@
-
+import ListaAdyacente
 
 #Tengo pensado colocar aquí todas las clases que se necesiten para el proyecto que tendrán carga masiva------------------------------------
 
@@ -12,9 +12,13 @@ class Cliente:
         self.__genero=genero
         self.__telefono=telefono
         self.__direccion=direccion
+        self.__viajes=0
 #Getters y setters
     def getDPI(self):
         return self.__dpi
+    
+    def getViajes(self):
+        return self.__viajes
     
     def getNombre(self):
         return self.__nombre
@@ -37,6 +41,9 @@ class Cliente:
     def setNombre(self,nombre:str):
         self.__nombre=nombre
 
+    def setViajes(self,viajes:int):
+        self.__viajes=viajes
+
     def setApellido(self,apellido:str):
         self.__apellido=apellido
 
@@ -58,10 +65,14 @@ class Vehiculo:
         self.__marca=marca
         self.__modelo=modelo
         self.__pps=pps
+        self.__viajes=0
 #Getters y setters
     def getPlaca(self):
         return self.__placa
     
+    def getViajes(self):
+        return self.__viajes
+
     def getMarca(self):
         return self.__marca
     
@@ -74,6 +85,9 @@ class Vehiculo:
     def setPlaca(self,placa:str):
         self.__placa=placa
 
+    def setViajes(self,viajes:int):
+        self.__viajes=viajes
+
     def setMarca(self,marca:str):
         self.__marca=marca
 
@@ -83,46 +97,17 @@ class Vehiculo:
     def setPPS(self,pps:float):
         self.__pps=pps
 #------------------------------------------------------------------------------------------
-#se guardará en un grafo
-'''class Ruta:
-    def __init__(self, origen:str, destino:str, tiempoRuta:float):
-        self.origen=origen
-        self.destino=destino
-        self.tiempoRuta=tiempoRuta
-    #getters y setters
-    def getOrigen(self):
-        return self.origen
-    
-    def getDestino(self):
-        return self.destino
-    
-    def getTiempoRuta(self):
-        return self.tiempoRuta
-    
-    def setOrigen(self,origen:str):
-        self.origen=origen
-
-    def setDestino(self,destino:str):
-        self.destino=destino
-
-    def setTiempoRuta(self,tiempoRuta:float):
-        self.tiempoRuta=tiempoRuta'''
-#------------------------------------------------------------------------------------------
-
-
-
-
 
 #va a estar almacenado en una lista circular simple
 class Viaje:
-    def __init__(self,origen:str,destino:str, fechaHoraInicio:str, cliente:str, vehiculo:str, pasos, tiempoRuta):
+    def __init__(self,origen:str,destino:str, fechaHoraInicio:str, cliente:Cliente, vehiculo:Vehiculo, pasos:ListaAdyacente.ListaResultado, tiempoRuta):
         self.id=9999 #Este id se generará automáticamente
         self.origen=origen
         self.destino=destino
         self.fechaHoraInicio=fechaHoraInicio
         self.cliente=cliente
         self.vehiculo=vehiculo
-        self.pasos=pasos
+        self.pasos: ListaAdyacente.ListaResultado=pasos
         self.tiempoRuta=tiempoRuta
         #self.ruta=ruta #En realidad debe ser la lista de las rutas cortas que tengo que hacer (es simple)
     #getters y setters
@@ -174,10 +159,10 @@ class Viaje:
     def setFechaHoraInicio(self,fechaHoraInicio:str):
         self.fechaHoraInicio=fechaHoraInicio
 
-    def setCliente(self,cliente:str):
+    def setCliente(self,cliente:Cliente):
         self.cliente=cliente
 
-    def setVehiculo(self,vehiculo:str):
+    def setVehiculo(self,vehiculo:Vehiculo):
         self.vehiculo=vehiculo
 
     
