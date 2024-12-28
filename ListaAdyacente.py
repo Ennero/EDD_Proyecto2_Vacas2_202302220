@@ -279,11 +279,11 @@ class ListaAdyacente:
                 nodo_actual = self.buscar(actual.nodo)
                 label = f"{actual.nodo}\nDistancia recorrida: {peso}"
                 if prepeso!=0:
-                    label =f"{actual.nodo}\nDistancia recorrida: {peso}+{nodo_actual.buscar(siguiente.nodo).peso}"
+                    label =f"{actual.nodo}\nDistancia recorrida: {prepeso}+{nodo_actual.buscar(siguiente.nodo).peso}={peso}"
                 prepeso=peso
                 peso += nodo_actual.buscar(siguiente.nodo).peso
             else:
-                label = actual.nodo + "\nDistancia recorrida: " + str(peso)
+                label =f"{actual.nodo}\nDistancia recorrida: \n{prepeso} + {nodo_actual.buscar(siguiente.nodo).peso} = {peso}"
             
             grafica.node(nodo_id, label)
             

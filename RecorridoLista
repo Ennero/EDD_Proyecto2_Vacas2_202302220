@@ -7,12 +7,12 @@ Distancia recorrida: 0"]
 Distancia recorrida: 324.0"]
 	nodo_0 -> nodo_1
 	nodo_2 [label="Barcelona
-Distancia recorrida: 324.0+330.0"]
+Distancia recorrida: 324.0+5.0=330.0"]
 	nodo_1 -> nodo_2
 	nodo_3 [label="Valencia
-Distancia recorrida: 330.0+335.0"]
+Distancia recorrida: 330.0+12.0=335.0"]
 	nodo_2 -> nodo_3
 	nodo_4 [label="Sevilla
-Distancia recorrida: 347.0"]
+Distancia recorrida: 335.0+12.0=347.0"]
 	nodo_3 -> nodo_4
 }
