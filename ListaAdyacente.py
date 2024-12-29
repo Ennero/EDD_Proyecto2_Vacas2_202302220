@@ -148,7 +148,7 @@ class ListaAdyacente:
                     aux = aux.siguiente
                 aux.siguiente = nuevo
         
-        aux = self.buscar(destino)
+        '''aux = self.buscar(destino)
         if aux:
             aux.insertar(origen, peso)
         else:
@@ -160,7 +160,7 @@ class ListaAdyacente:
                 aux = self.inicio
                 while aux.siguiente:
                     aux = aux.siguiente
-                aux.siguiente = nuevo
+                aux.siguiente = nuevo'''
 
     def generarGrafo(self):
         grafica = graphviz.Graph('Grafo', filename='Rutas', format='png', engine="neato")

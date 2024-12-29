@@ -135,7 +135,7 @@ class listaSimple:
             
             for j in range(self.__tamano -i-1):
                 # Si el actual es mayor que el siguiente, intercambiamos los valores
-                if int(actual.getValor().getVehiculo().getPPS()) * int(actual.getValor().getTiempoRuta()) < int(siguiente.getValor().getVehiculo().getPPS()) * int(siguiente.getValor().getTiempoRuta()):
+                if (float(actual.getValor().getVehiculo().getPPS()) * float(actual.getValor().getTiempoRuta())) < (float(siguiente.getValor().getVehiculo().getPPS()) * float(siguiente.getValor().getTiempoRuta())):
                     # Intercambiamos solo los valores, no los nodos
                     valorTemp = actual.getValor()
                     actual.setValor(siguiente.getValor())
@@ -151,7 +151,7 @@ class listaSimple:
             actual = self.__inicio
             siguiente = actual.getSiguiente()
             
-            for j in range(self.__tamano -i-1):
+            for j in range(self.__tamano-i-1):
                 # Si el actual es mayor que el siguiente, intercambiamos los valores
                 if actual.getValor().getPasos().tamano < siguiente.getValor().getPasos().tamano:
                     # Intercambiamos solo los valores, no los nodos

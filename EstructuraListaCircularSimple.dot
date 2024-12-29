@@ -3,5 +3,5 @@ rankdir=LR;node [shape=record, style=filled, fillcolor=lightsalmon, margin=0.2];
 edge [style=solid, color=red];
 graph [ranksep=1.5, nodesep=1];
 graph [label="", fontsize=20, fontcolor=black];
-"0" [label="{ID: 0\lOrigen: Oviedo\lDestino: Bilbao\lFecha y Hora de Inicio: 28/12/2024 10:27\lDPI del Cliente: 161026412514\lNombre del Cliente: Sofia Morales Torres\lPlaca del Vehículo: 015PAN\lMarca del Vehículo: Ford\lTiempo de la Ruta: 304.0\l}}"];
+"0" [label="{ID: 0\lOrigen: Valencia\lDestino: Madrid\lFecha y Hora de Inicio: 28/12/2024 19:49\lDPI del Cliente: 3000853700101\lNombre del Cliente: Elian Estrada\lPlaca del Vehículo: 015PAN\lMarca del Vehículo: Ford\lTiempo de la Ruta: 442.0\l}}"];
 }

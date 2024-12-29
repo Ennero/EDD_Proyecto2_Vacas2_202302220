@@ -139,7 +139,7 @@ def cargaMasivaVehículos():
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo abrir el archivo: {str(e)}")
         #                  651CVD:    Marca:    Modelo:  precio   
-        patronVehiculo=r'\s*(.*):\s*([A-Za-z]+):\s*(.+):\s*(\d+)'
+        patronVehiculo=r'\s*(.*):\s*([A-Za-z]+):\s*(.+):\s*(.+)'
 
         #Ciclo para ir separando los clientes
         print(vehiculos)
@@ -429,11 +429,15 @@ def topVehiculos():
 
     aux=viajes.getInicio()
     contador: int=0
+    auxi=None
     while aux and contador<5:
-        tabla.insert("", tk.END, values=(str(aux.getValor().getVehiculo().getViajes()),aux.getValor().getVehiculo().getPlaca(), aux.getValor().getVehiculo().getMarca(), aux.getValor().getVehiculo().getModelo(), aux.getValor().getVehiculo().getPPS()))
+        if auxi==aux:
+            contador-=1
+        else:
+            tabla.insert("", tk.END, values=(str(aux.getValor().getVehiculo().getViajes()),aux.getValor().getVehiculo().getPlaca(), aux.getValor().getVehiculo().getMarca(), aux.getValor().getVehiculo().getModelo(), aux.getValor().getVehiculo().getPPS()))
+        auxi=aux
         aux=aux.getSiguiente()
         contador+=1
-
     tabla.pack(side="bottom", fill="both", expand=True)
     
 def topClientes():
@@ -453,8 +457,13 @@ def topClientes():
 
     aux=viajes.getInicio()
     contador: int=0
+    auxi=None
     while aux and contador<5:
-        tabla.insert("", tk.END, values=(aux.getValor().getCliente().getViajes(), aux.getValor().getCliente().getDPI(), aux.getValor().getCliente().getNombre() + " " + aux.getValor().getCliente().getApellido(), aux.getValor().getCliente().getGenero()))
+        if auxi==aux:
+            contador-=1
+        else:
+            tabla.insert("", tk.END, values=(aux.getValor().getCliente().getViajes(), aux.getValor().getCliente().getDPI(), aux.getValor().getCliente().getNombre() + " " + aux.getValor().getCliente().getApellido(), aux.getValor().getCliente().getGenero()))
+        auxi=aux
         aux=aux.getSiguiente()
         contador+=1
 

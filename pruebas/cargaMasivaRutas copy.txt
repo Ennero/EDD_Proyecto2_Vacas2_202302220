@@ -1,9 +1,0 @@
-Oviedo / Bilbao / 304 %
-Bilbao / Zaragoza / 324% 
-Madrid / Barcelona / 10%
-Madrid / Valencia / 7%
-Barcelona / Valencia / 5%
-Barcelona / Zaragoza / 6%
-Valencia / Sevilla / 12%
-Sevilla / Granada / 4%
-Sevilla / Córdoba / 3%

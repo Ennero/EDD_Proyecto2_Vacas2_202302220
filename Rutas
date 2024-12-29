@@ -3,31 +3,67 @@ graph Grafo {
 	edge [color=red fontsize=8 style=dotted]
 	rankdir=LR
 	concentrate=true
+	Cadiz
+	Cadiz -- Sevilla [label=125.0]
+	Sevilla
+	Sevilla -- Cadiz [label=125.0]
+	Sevilla -- Granada [label=256.0]
+	Sevilla -- Jaen [label=242.0]
+	Granada
+	Granada -- Sevilla [label=256.0]
+	Granada -- Jaen [label=99.0]
+	Granada -- Murcia [label=278.0]
+	Jaen
+	Jaen -- Sevilla [label=242.0]
+	Jaen -- Granada [label=99.0]
+	Jaen -- Madrid [label=335.0]
+	Murcia
+	Murcia -- Granada [label=278.0]
+	Murcia -- Valencia [label=241.0]
+	Murcia -- Albacete [label=150.0]
+	Madrid
+	Madrid -- Jaen [label=335.0]
+	Madrid -- Albacete [label=251.0]
+	Madrid -- Zaragoza [label=325.0]
+	Madrid -- Badajoz [label=403.0]
+	Madrid -- Valladolid [label=193.0]
+	Madrid -- Bilbao [label=395.0]
+	Valencia
+	Valencia -- Murcia [label=241.0]
+	Valencia -- Albacete [label=191.0]
+	Valencia -- Barcelona [label=349.0]
+	Albacete
+	Albacete -- Murcia [label=150.0]
+	Albacete -- Valencia [label=191.0]
+	Albacete -- Madrid [label=251.0]
+	Barcelona
+	Barcelona -- Valencia [label=349.0]
+	Barcelona -- Gerona [label=100.0]
+	Barcelona -- Zaragoza [label=296.0]
+	Gerona
+	Gerona -- Barcelona [label=100.0]
+	Zaragoza
+	Zaragoza -- Barcelona [label=296.0]
+	Zaragoza -- Madrid [label=325.0]
+	Zaragoza -- Bilbao [label=324.0]
+	Badajoz
+	Badajoz -- Madrid [label=403.0]
+	Valladolid
+	Valladolid -- Madrid [label=193.0]
+	Valladolid -- Vigo [label=356.0]
+	Valladolid -- Coruna [label=455.0]
+	Valladolid -- Bilbao [label=280.0]
+	Vigo
+	Vigo -- Valladolid [label=356.0]
+	Vigo -- Coruna [label=171.0]
+	Coruna
+	Coruna -- Valladolid [label=455.0]
+	Coruna -- Vigo [label=171.0]
+	Bilbao
+	Bilbao -- Valladolid [label=280.0]
+	Bilbao -- Madrid [label=395.0]
+	Bilbao -- Zaragoza [label=324.0]
+	Bilbao -- Oviedo [label=304.0]
 	Oviedo
 	Oviedo -- Bilbao [label=304.0]
-	Bilbao
-	Bilbao -- Oviedo [label=304.0]
-	Bilbao -- Zaragoza [label=324.0]
-	Zaragoza
-	Zaragoza -- Bilbao [label=324.0]
-	Zaragoza -- Barcelona [label=6.0]
-	Madrid
-	Madrid -- Barcelona [label=10.0]
-	Madrid -- Valencia [label=7.0]
-	Barcelona
-	Barcelona -- Madrid [label=10.0]
-	Barcelona -- Valencia [label=5.0]
-	Barcelona -- Zaragoza [label=6.0]
-	Valencia
-	Valencia -- Madrid [label=7.0]
-	Valencia -- Barcelona [label=5.0]
-	Valencia -- Sevilla [label=12.0]
-	Sevilla
-	Sevilla -- Valencia [label=12.0]
-	Sevilla -- Granada [label=4.0]
-	Sevilla -- "Córdoba" [label=3.0]
-	Granada
-	Granada -- Sevilla [label=4.0]
-	"Córdoba"
-	"Córdoba" -- Sevilla [label=3.0]
 }
