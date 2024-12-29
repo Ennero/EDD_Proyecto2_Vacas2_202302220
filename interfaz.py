@@ -384,6 +384,8 @@ def mostrarViajes():
     info.config(text="Mostrando viajes...", foreground="black", font=("Arial", 9, "italic"))
     mostrar:str=""
 
+    #Ordeno los viajes por ID por si se desordenaron
+    viajes.ordenarPorID()
     #Ante de todo limpio ambos para no confudirme
     limpiar()
     mostrar=viajes.stringViajes()
@@ -454,6 +456,10 @@ def topClientes():
     columnas = ("Viajes", "DPI", "nombreCliente", "Genero")
     def obtener_valores(aux):
         cliente = aux.getValor().getCliente()
+
+
+
+
         return (cliente.getViajes(), cliente.getDPI(),
                 f"{cliente.getNombre()} {cliente.getApellido()}", 
                 cliente.getGenero())
@@ -464,12 +470,11 @@ def topGanancias():
     global viajes
     viajes.ordenarPorGanancias()
     
-    columnas = ("Ganancias", "id", "origen", "destino", "tiempo", "cliente", "vehículo")
+    columnas = ("Ganancias","Precio Vehiculo", "tiempo", "id", "origen", "destino", "vehículo")
     def obtener_valores(aux):
         valor = aux.getValor()
-        return (str(float(valor.getTiempoRuta()) * float(valor.getVehiculo().getPPS())),
-                valor.getId(), valor.getOrigen(), valor.getDestino(), 
-                valor.getTiempoRuta(), valor.getCliente().getNombre(), 
+        return (str(float(valor.getTiempoRuta()) * float(valor.getVehiculo().getPPS())),str(valor.getVehiculo().getPPS()),
+                valor.getTiempoRuta(),valor.getId(), valor.getOrigen(), valor.getDestino(), 
                 valor.getVehiculo().getPlaca())
     
     actualizarTabla(columnas, obtener_valores)
@@ -526,25 +531,29 @@ def actualizarTabla(columnas, valores_func):
     scrollbar = ttk.Scrollbar(fram33, orient="vertical", command=tabla.yview)
     tabla.configure(yscrollcommand=scrollbar.set)
 
-
-
     #Configuro cabeceras
     for col in columnas:
         tabla.heading(col, text=col)
-        #tabla.column(col, width=100)
+        tabla.column(col, width=88)
     
     #Inserto los valores
     aux = viajes.getInicio()
     contador = 0
     auxi = None
+    prevalores=None
+    valores=None
     while aux and contador < 5:
         if auxi == aux:
             contador -= 1
         else:
             valores = valores_func(aux)
-            tabla.insert("", tk.END, values=valores)
+            if valores != prevalores:
+                tabla.insert("", tk.END, values=valores)
+            else:
+                contador -= 1
         auxi = aux
         aux = aux.getSiguiente()
+        prevalores = valores
         contador += 1
 
     

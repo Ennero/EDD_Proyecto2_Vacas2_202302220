@@ -270,6 +270,7 @@ class ListaAdyacente:
         prev_node_id = None
         peso=0
         prepeso=0
+        pesitoActual=0
         #Ciclo para recorrer la lista de nodos y generar los nodos en la gráfica
         while actual:
             nodo_id = f'nodo_{i}'
@@ -279,11 +280,14 @@ class ListaAdyacente:
                 nodo_actual = self.buscar(actual.nodo)
                 label = f"{actual.nodo}\nDistancia recorrida: {peso}"
                 if prepeso!=0:
-                    label =f"{actual.nodo}\nDistancia recorrida: {prepeso}+{nodo_actual.buscar(siguiente.nodo).peso}={peso}"
+                    label =f"{actual.nodo}\nDistancia recorrida: {prepeso}+{pesitoActual}={peso}"
+
+                #Actualizo los pesos
                 prepeso=peso
+                pesitoActual=nodo_actual.buscar(siguiente.nodo).peso
                 peso += nodo_actual.buscar(siguiente.nodo).peso
             else:
-                label =f"{actual.nodo}\nDistancia recorrida: \n{prepeso} + {nodo_actual.buscar(siguiente.nodo).peso} = {peso}"
+                label =f"{actual.nodo}\nDistancia recorrida: \n{prepeso} + {pesitoActual} = {peso}"
             
             grafica.node(nodo_id, label)
             

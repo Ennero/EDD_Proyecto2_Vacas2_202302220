@@ -90,6 +90,24 @@ class listaSimple:
 
 #Aquí coloca las funciones de ordenamiento para los reportes :)
 #-----------------------------------------------------------------------------
+    #Función para order por id
+    def ordenarPorID(self):
+        if self.__tamano <= 1: return
+            
+        for i in range(self.__tamano):
+            actual = self.__inicio
+            siguiente = actual.getSiguiente()
+            
+            for j in range(self.__tamano - i - 1):
+                # Si el actual es mayor que el siguiente, intercambiamos los valores
+                if actual.getValor().getId() > siguiente.getValor().getId():
+                    # Intercambiamos solo los valores, no los nodos
+                    valorTemp = actual.getValor()
+                    actual.setValor(siguiente.getValor())
+                    siguiente.setValor(valorTemp)
+                actual = siguiente
+                siguiente = siguiente.getSiguiente()
+
 
     def ordenarPorVehiculos(self):
         if self.__tamano <= 1: return

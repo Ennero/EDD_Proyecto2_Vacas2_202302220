@@ -3,5 +3,13 @@ rankdir=LR;node [shape=record, style=filled, fillcolor=lightsalmon, margin=0.2];
 edge [style=solid, color=red];
 graph [ranksep=1.5, nodesep=1];
 graph [label="", fontsize=20, fontcolor=black];
-"0" [label="{ID: 0\lOrigen: Valencia\lDestino: Madrid\lFecha y Hora de Inicio: 28/12/2024 19:49\lDPI del Cliente: 3000853700101\lNombre del Cliente: Elian Estrada\lPlaca del Vehículo: 015PAN\lMarca del Vehículo: Ford\lTiempo de la Ruta: 442.0\l}}"];
+"0" [label="{ID: 0\lOrigen: Jaen\lDestino: Madrid\lFecha y Hora de Inicio: 29/12/2024 12:45\lDPI del Cliente: 3000853700101\lNombre del Cliente: Elian Estrada\lPlaca del Vehículo: 100KAR\lMarca del Vehículo: Honda\lTiempo de la Ruta: 335.0\l}}"];
+"0" -> "1";
+"1" [label="{ID: 1\lOrigen: Madrid\lDestino: Jaen\lFecha y Hora de Inicio: 29/12/2024 12:46\lDPI del Cliente: 3000853700101\lNombre del Cliente: Elian Estrada\lPlaca del Vehículo: 109XGC\lMarca del Vehículo: Hyundai\lTiempo de la Ruta: 335.0\l}}"];
+"1" -> "2";
+"2" [label="{ID: 2\lOrigen: Bilbao\lDestino: Madrid\lFecha y Hora de Inicio: 29/12/2024 12:46\lDPI del Cliente: 3000853700105\lNombre del Cliente: Angela Pelaez\lPlaca del Vehículo: 100KAR\lMarca del Vehículo: Honda\lTiempo de la Ruta: 395.0\l}}"];
+"2" -> "3";
+"3" [label="{ID: 3\lOrigen: Valencia\lDestino: Barcelona\lFecha y Hora de Inicio: 29/12/2024 12:46\lDPI del Cliente: 3000853700101\lNombre del Cliente: Elian Estrada\lPlaca del Vehículo: 216SBS\lMarca del Vehículo: Toyota\lTiempo de la Ruta: 349.0\l}}"];
+"3" -> "4";
+"4" [label="{ID: 4\lOrigen: Vigo\lDestino: Murcia\lFecha y Hora de Inicio: 29/12/2024 12:47\lDPI del Cliente: 3000853700110\lNombre del Cliente: Paola Castillo\lPlaca del Vehículo: 100KAR\lMarca del Vehículo: Honda\lTiempo de la Ruta: 950.0\l}}"];
 }
