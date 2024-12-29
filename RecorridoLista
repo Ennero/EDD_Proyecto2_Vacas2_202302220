@@ -1,13 +1,10 @@
 digraph RecorridoLista {
 	rankdir=LR
 	node [color=lightsalmon shape=box style=filled]
-	nodo_0 [label="Valencia
+	nodo_0 [label="Jaen
 Distancia recorrida: 0"]
-	nodo_1 [label="Albacete
-Distancia recorrida: 191.0"]
-	nodo_0 -> nodo_1
-	nodo_2 [label="Madrid
+	nodo_1 [label="Madrid
 Distancia recorrida: 
-191.0 + 251.0 = 442.0"]
-	nodo_1 -> nodo_2
+0 + 335.0 = 335.0"]
+	nodo_0 -> nodo_1
 }

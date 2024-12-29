@@ -16,7 +16,9 @@ clientes: listaCircularDoble =listaCircularDoble()
 viajes: listaSimple = listaSimple()
 rutas: ListaAdyacente=ListaAdyacente()
 
-
+entrada1=None
+scroll1=None
+tabla=None
 
 #Declarando mis variables globales
 rutaGrafica:str="C:/banderas/nono.png"
@@ -31,9 +33,13 @@ def limpiar():
     entrada.delete(1.0, tk.END)
     entrada.config(state=tk.DISABLED)
 
-    entrada1.config(state=tk.NORMAL)
-    entrada1.delete(1.0, tk.END)
-    entrada1.config(state=tk.DISABLED)
+    #Limpio la segunda entrada
+    if entrada1!=None:
+        entrada1.config(state=tk.NORMAL)
+        entrada1.delete(1.0, tk.END)
+        entrada1.config(state=tk.DISABLED)
+    #Limpio la tabla
+    eliminarTablita()
 #Fin de botones inútiles-----------------------------------------------------------------------------------------------------
     
 def cargarRutas():
@@ -71,10 +77,12 @@ def cargarRutas():
         rutas.generarGrafo()
         rutaGrafica="Rutas.png"
 
-        graficaImg=PhotoImage(file=rutaGrafica) #Actualizo la gráfica
-        graficaImg=graficaImg.subsample(1,1)
-        gra.config(image=graficaImg)
-        gra.image=graficaImg
+        graficaImg=Image.open(rutaGrafica) #Actualizo la gráfica
+        redimencionada=graficaImg.resize((680, 500), Image.Resampling.LANCZOS)
+        grafiquita=ImageTk.PhotoImage(redimencionada)
+        gra.config(image=grafiquita)
+        gra.image=grafiquita
+        gra.pack(anchor="e")
 
         #Aquí destruyo el botón para cargar rutas porque ya no lo voy a volver a usar
         botonRutas.destroy()
@@ -360,7 +368,8 @@ def mostrarClientes():
     entrada.config(state=tk.DISABLED)
 
 def mostrarVehículos():
-    global vehículos
+    global vehículos, entrada1, scroll1
+    regenerarEntrada1()
     info.config(text="Mostrando vehículos...", foreground="black", font=("Arial", 9, "italic"))
     mostrar:str=""
     mostrar=vehículos.stringVehiculos()
@@ -411,120 +420,72 @@ def rutaDeUnViaje():
             rutas.visualizar_recorrido_lista(origen, destino)
             info.config(text="Ruta del viaje mostrada correctamente", foreground="green", font=("Arial", 9, "italic"))
 
+def regenerarEntrada1():
+    global entrada1, scroll1,tabla
+    # Segunda entrada con scroll
+    eliminarTablita()
+    eliminarSegundaEntrada()
+
+    scroll1 = tk.Scrollbar(fram33, orient="vertical")
+    scroll1.pack(side="right", fill="y")
+
+    entrada1 = tk.Text(fram33, height=11, width=75, yscrollcommand=scroll1.set)
+    entrada1.pack(side="bottom", fill="both", expand=True)
+    scroll1.config(command=entrada1.yview)
+    entrada1.config(font=("consolas", 10), state=tk.DISABLED)
+
 
 def topVehiculos():
     global viajes
-    eliminarSegundaEntrada()
-    eliminarTablita()
-    viajes.ordenarPorVehiculos() #Ordeno los viajes de acuerdo a los luagares por los que se pasó
-    info.config(text="Mostrando top de vehículos...", foreground="black", font=("Arial", 9, "italic"))
-
-    tabla= ttk.Treeview(fram33,columns=("Viajes","Placa","Marca","Modelo","Precio" ), show="headings")
+    viajes.ordenarPorVehiculos()
     
-    tabla.heading("Viajes", text="Viajes")
-    tabla.heading("Placa", text="Placa")
-    tabla.heading("Marca", text="Marca")
-    tabla.heading("Modelo", text="Modelo")
-    tabla.heading("Precio", text="Precio")
-
-    aux=viajes.getInicio()
-    contador: int=0
-    auxi=None
-    while aux and contador<5:
-        if auxi==aux:
-            contador-=1
-        else:
-            tabla.insert("", tk.END, values=(str(aux.getValor().getVehiculo().getViajes()),aux.getValor().getVehiculo().getPlaca(), aux.getValor().getVehiculo().getMarca(), aux.getValor().getVehiculo().getModelo(), aux.getValor().getVehiculo().getPPS()))
-        auxi=aux
-        aux=aux.getSiguiente()
-        contador+=1
-    tabla.pack(side="bottom", fill="both", expand=True)
+    columnas = ("Viajes", "Placa", "Marca", "Modelo", "Precio")
+    def obtener_valores(aux):
+        vehiculo = aux.getValor().getVehiculo()
+        return (str(vehiculo.getViajes()), vehiculo.getPlaca(), 
+                vehiculo.getMarca(), vehiculo.getModelo(), vehiculo.getPPS())
     
+    actualizarTabla(columnas, obtener_valores)
+
 def topClientes():
     global viajes
-    eliminarSegundaEntrada()
-    eliminarTablita()
-    viajes.ordenarPorClientes() #Ordeno los viajes de acuerdo a los luagares por los que se pasó
-    info.config(text="Mostrando top de Clientes...", foreground="black", font=("Arial", 9, "italic"))
-
+    viajes.ordenarPorClientes()
     
-    tabla= ttk.Treeview(fram33,columns=( "Viajes","DPI", "nombreCliente", "Genero"), show="headings")
+    columnas = ("Viajes", "DPI", "nombreCliente", "Genero")
+    def obtener_valores(aux):
+        cliente = aux.getValor().getCliente()
+        return (cliente.getViajes(), cliente.getDPI(),
+                f"{cliente.getNombre()} {cliente.getApellido()}", 
+                cliente.getGenero())
     
-    tabla.heading("Viajes", text="Viajes")
-    tabla.heading("DPI", text="DPI")
-    tabla.heading("nombreCliente", text="Nombre")
-    tabla.heading("Genero", text="Genero")    
-
-    aux=viajes.getInicio()
-    contador: int=0
-    auxi=None
-    while aux and contador<5:
-        if auxi==aux:
-            contador-=1
-        else:
-            tabla.insert("", tk.END, values=(aux.getValor().getCliente().getViajes(), aux.getValor().getCliente().getDPI(), aux.getValor().getCliente().getNombre() + " " + aux.getValor().getCliente().getApellido(), aux.getValor().getCliente().getGenero()))
-        auxi=aux
-        aux=aux.getSiguiente()
-        contador+=1
-
-    tabla.pack(side="bottom", fill="both", expand=True)
+    actualizarTabla(columnas, obtener_valores)
 
 def topGanancias():
     global viajes
-    eliminarSegundaEntrada()
-    eliminarTablita()
-    viajes.ordenarPorGanancias() #Ordeno los viajes de acuerdo a los luagares por los que se pasó
-    info.config(text="Mostrando top de ganancias...", foreground="black", font=("Arial", 9, "italic"))
+    viajes.ordenarPorGanancias()
     
-    tabla= ttk.Treeview(fram33,columns=("Ganancias","id","origen","destino","tiempo","cliente","vehículo"), show="headings")
-
-    tabla.heading("Ganancias", text="Ganancias")
-    tabla.heading("id", text="ID viaje")
-    tabla.heading("origen", text="Origen")
-    tabla.heading("destino", text="Destino")
-    tabla.heading("tiempo", text="Tiempo")
-    tabla.heading("cliente", text="Cliente")
-    tabla.heading("vehículo", text="Vehículo")
+    columnas = ("Ganancias", "id", "origen", "destino", "tiempo", "cliente", "vehículo")
+    def obtener_valores(aux):
+        valor = aux.getValor()
+        return (str(float(valor.getTiempoRuta()) * float(valor.getVehiculo().getPPS())),
+                valor.getId(), valor.getOrigen(), valor.getDestino(), 
+                valor.getTiempoRuta(), valor.getCliente().getNombre(), 
+                valor.getVehiculo().getPlaca())
     
-
-    aux=viajes.getInicio()
-    contador: int=0
-    while aux and contador<5:
-        tabla.insert("", tk.END, values=(str(int(aux.getValor().getTiempoRuta())*int(aux.getValor().getVehiculo().getPPS())),aux.getValor().getId(), aux.getValor().getOrigen(), aux.getValor().getDestino(), aux.getValor().getTiempoRuta(), aux.getValor().getCliente().getNombre(), aux.getValor().getVehiculo().getPlaca()))
-        aux=aux.getSiguiente()
-        contador+=1
-
-    tabla.pack(side="bottom", fill="both", expand=True)
-
+    actualizarTabla(columnas, obtener_valores)
 
 def topViajesLargos():
     global viajes
-    eliminarSegundaEntrada()
-    eliminarTablita()
-    viajes.ordenarPorLargo() #Ordeno los viajes de acuerdo a los luagares por los que se pasó
-    info.config(text="Mostrando top de viajes largos...", foreground="black", font=("Arial", 9, "italic"))
-
+    viajes.ordenarPorLargo()
     
-    tabla= ttk.Treeview(fram33,columns=("Destinos","id","cliente", "vehículo", "origen", "destino", "tiempo"), show="headings")
-
-    tabla.heading("Destinos", text="Destinos")
-    tabla.heading("id", text="ID viaje")
-    tabla.heading("origen", text="Origen")
-    tabla.heading("destino", text="Destino")
-    tabla.heading("tiempo", text="Tiempo")
-    tabla.heading("cliente", text="Cliente")
-    tabla.heading("vehículo", text="Vehículo")
+    columnas = ("Destinos", "id", "origen", "destino", "tiempo", "cliente", "vehículo")
+    def obtener_valores(aux):
+        valor = aux.getValor()
+        return (str(valor.getPasos().tamano), valor.getId(), 
+                valor.getOrigen(), valor.getDestino(), valor.getTiempoRuta(),
+                valor.getCliente().getNombre(), valor.getVehiculo().getPlaca())
     
-
-    aux=viajes.getInicio()
-    contador: int=0
-    while aux and contador<5:
-        tabla.insert("", tk.END, values=(str(aux.getValor().getPasos().tamano),aux.getValor().getId(), aux.getValor().getOrigen(), aux.getValor().getDestino(), aux.getValor().getTiempoRuta(), aux.getValor().getCliente().getNombre(), aux.getValor().getVehiculo().getPlaca()))
-        aux=aux.getSiguiente()
-        contador+=1
-
-    tabla.pack(side="bottom", fill="both", expand=True)
-
+    actualizarTabla(columnas, obtener_valores)
 #Fin de funcinoes para reportes----------------------------------------------------------------
 
 #Funciones para mostrar estructura de datos------------------------------------------------
@@ -545,24 +506,105 @@ def estructuraViajes():
 
 #Fin de funciones para mostrar estructura de datos------------------------------------------
 
+
+
+
 #Generación de tabla :)---------------------------------------------------------------------
+
+def actualizarTabla(columnas, valores_func):
+    global tabla, fram33, entrada1, scroll1
+
+    #Primero elimino la tabla y la entrada si es que existen
+    eliminarTablita()
+    eliminarSegundaEntrada()
+    
+    #Creo la nueva tabla
+    tabla = ttk.Treeview(fram33, columns=columnas, show="headings")
+    #tabla.column(col, width=100)
+
+    #nueva scrollbar
+    scrollbar = ttk.Scrollbar(fram33, orient="vertical", command=tabla.yview)
+    tabla.configure(yscrollcommand=scrollbar.set)
+
+
+
+    #Configuro cabeceras
+    for col in columnas:
+        tabla.heading(col, text=col)
+        #tabla.column(col, width=100)
+    
+    #Inserto los valores
+    aux = viajes.getInicio()
+    contador = 0
+    auxi = None
+    while aux and contador < 5:
+        if auxi == aux:
+            contador -= 1
+        else:
+            valores = valores_func(aux)
+            tabla.insert("", tk.END, values=valores)
+        auxi = aux
+        aux = aux.getSiguiente()
+        contador += 1
+
+    
+    tabla.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+
+
 def eliminarTablita():
-    tabla.destroy()
+    global tabla
+    if tabla is not None:
+        for widget in tabla.winfo_children():
+            if isinstance(widget, ttk.Treeview):
+                widget.destroy()
+        tabla.destroy()
+        tabla = None
 
 def eliminarSegundaEntrada():
-    entrada1.destroy()
-    scroll1.destroy()
-
+    global entrada1, scroll1
+    if entrada1!=None:
+        entrada1.destroy()
+        entrada1=None
+    if scroll1!=None:
+        scroll1.destroy()
+        scroll1=None
+    
+    for widget in fram33.winfo_children():
+        if isinstance(widget, ttk.Scrollbar):
+            widget.destroy()
 
 #Fin de generación de tabla------------------------------------------------------------------
     
+#Función para mostrar información por id de los viajes
+def mostrarInfoPorID():
+    global viajes
+    mostrarViajes()
+    info.config(text="Solicitando id", foreground="black", font=("Arial", 9, "italic"))
+    id=simpledialog.askstring("Información de viaje por Id", "Ingrese el ID del viaje:",parent=ventana)
+    if id==None:
+        messagebox.showerror("Error", "No se pudo mostrar la información del viaje.")
+        info.config(text="Error al mostrar la información del viaje", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        #Busco el viaje
+        viaje:clases.Viaje=viajes.encontrar(int(id))
+        if viaje==None:
+            messagebox.showerror("Error", "No se encontró el viaje.")
+            info.config(text="Viaje no encontrado", foreground="red", font=("Arial", 9, "italic"))
+            return
+        else:
+            #Muestro la información del viaje
+            messagebox.showinfo("Información de viaje "+str(viaje.getId()), f"ID: {str(viaje.getId())}\nOrigen: {viaje.getOrigen()}\nDestino: {viaje.getDestino()}\nFecha: {viaje.getFechaHoraInicio()}\nCliente: {viaje.getCliente().getNombre()} {viaje.getCliente().getApellido()}\nVehículo: {viaje.getVehiculo().getPlaca()}\nTiempo: {str(viaje.getTiempoRuta())}")
+
+
 #INTEFAZ GRÁFICAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 #----------------------------------------------------------------------------
 
 #Creo la ventana principal
 ventana = tk.Tk()
 ventana.title("Llega Rapidito")
-ventana.geometry("1280x720")
+ventana.geometry("1280x800")
 
 
 # Creación de los frames para la interfaz
@@ -593,7 +635,6 @@ frame6.config(border=2, relief="groove", borderwidth=5)
 frame6.pack(side=tk.RIGHT)
 
 #ARRIBA---------------------------------------------------------------------------------------------------------------------------
-
 #Título global de la ventana
 titulo=tk.Label(frame10, text="LLEGA RAPIDITO")
 titulo.pack()
@@ -651,7 +692,7 @@ scroll.pack(side="right", fill="y")
 entrada = tk.Text(fram32, height=11, width=75, yscrollcommand=scroll.set)
 entrada.pack(side="bottom", fill="both", expand=True)
 scroll.config(command=entrada.yview)
-entrada.config(font=("consolas", 11), state=tk.DISABLED)
+entrada.config(font=("consolas", 10), state=tk.DISABLED)
 
 # Segunda entrada con scroll
 scroll1 = tk.Scrollbar(fram33, orient="vertical")
@@ -660,7 +701,7 @@ scroll1.pack(side="right", fill="y")
 entrada1 = tk.Text(fram33, height=11, width=75, yscrollcommand=scroll1.set)
 entrada1.pack(side="bottom", fill="both", expand=True)
 scroll1.config(command=entrada1.yview)
-entrada1.config(font=("consolas", 11), state=tk.DISABLED)
+entrada1.config(font=("consolas", 10), state=tk.DISABLED)
 
 #**************************************************************
 tabla= ttk.Treeview(fram33)
@@ -773,7 +814,10 @@ guardoComo = tk.Button(contenedorViajes, text="Mostrar Estructura de Datos", hei
 guardoComo.pack()
 guardoComo.config(background="white", foreground="black", font=("Arial", 10, "bold"))
 
-
+#Creación de botón para mostrar información por id
+mostrarInfoIndividual=tk.Button(contenedorViajes, text="Mostrar Información por ID", height="1", width="22", command=mostrarInfoPorID)
+mostrarInfoIndividual.pack()
+mostrarInfoIndividual.config(background="white", foreground="black", font=("Arial", 10, "bold"))
 
 #Menu para REPORTES---------------------------------------------------------------------------------------------------------------------------
 contenedorReportes=tk.Frame(frame6)

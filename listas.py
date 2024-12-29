@@ -108,6 +108,7 @@ class listaSimple:
                 actual = siguiente
                 siguiente = siguiente.getSiguiente()
     
+    
     def ordenarPorClientes(self):
         if self.__tamano <= 1: return
 
@@ -125,7 +126,7 @@ class listaSimple:
                 actual = siguiente
                 siguiente = siguiente.getSiguiente()
 
-
+    #De momento no funciona correctament
     def ordenarPorGanancias(self):
         if self.__tamano <= 1: return
 
@@ -135,7 +136,9 @@ class listaSimple:
             
             for j in range(self.__tamano -i-1):
                 # Si el actual es mayor que el siguiente, intercambiamos los valores
-                if (float(actual.getValor().getVehiculo().getPPS()) * float(actual.getValor().getTiempoRuta())) < (float(siguiente.getValor().getVehiculo().getPPS()) * float(siguiente.getValor().getTiempoRuta())):
+                multiactual= float(actual.getValor().getVehiculo().getPPS()) * float(actual.getValor().getTiempoRuta())
+                multisiguiente= float(siguiente.getValor().getVehiculo().getPPS()) * float(siguiente.getValor().getTiempoRuta())
+                if (multiactual) < (multisiguiente):
                     # Intercambiamos solo los valores, no los nodos
                     valorTemp = actual.getValor()
                     actual.setValor(siguiente.getValor())
