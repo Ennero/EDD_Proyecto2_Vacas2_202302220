@@ -74,12 +74,19 @@ Este programa es una herramienta que permite la administración ordenada de viaj
 ![24](./img/24.png)
 25. Adicionalemente, también se mostrará la estructura de donde se guardó la información de los viajes mediante un pdf con un grafo creado con graphviz.
 ![25](./img/25.png)
-26. Ahora yendo a la sección de la ruta de un viaje, si se selecciona esta opción, se solicitará el id del viaje para mostrar paso por paso mediante un grafo de graphviz, los lugares por los que pasó el viaje.
+26. Ahora yendo a la sección de la Reportes, si se selecciona la opción de *Ruta de un Viaje*, se solicitará el id del viaje para mostrar paso por paso mediante un grafo de graphviz, los lugares por los que pasó el viaje.
 ![26](./img/26.png)
-27. Ahora, si se escoje la opción de *Top 5 Viajes Largos*, se mostrará en una tabla, los viajes más largos (en referencia a los lugares por los que pasaron). Como en este ejemplo solo se tiene 1, se muestra ese único viaje, puesto a que es el más largo.
+27. Para continuar con los ejemplos, se ingresaron nuevos viajes de la misma manera en la que se mostró en este manual. Si se escoge la opción de *Top 5 Viajes Largos*, se creará una tabla en donde se encuentra el segundo campo de entrada de arriba para abajo en donde se presentarán los viajes que pasarón por la mayor cantidad de lugares.
 ![27](./img/27.png)
-28. 
+28. Si se selecciona la opción de *Top 5 Ganancias*, se mostrarán los viajes que generaron más ganancias a partir del tiempo en que se demoró el viaje y costo de renta del vehículo
+![28](./img/28.png)
+29. Con la opción *Top 5 Clientes* se mostrarán los 5 clientes con más viajes realizados, en esta ocasión, dado a que hay unicamente 4 clientes, serán los únicos que se mostrarán.
+![29](./img/29.png)
+30. Por último, si se presiona la opción de *Top 5 vehículos*, se mostrarán los 5 vehículos más utilizados para los viajes. De la misma manera que previamente, se utilizaron unicamente 3 vehículos, por lo que solo se mostrarán esos 3
+![30](./img/30.png)
 
+
+Con esto se finaliza el manual de usuario de **Llega Rapidito**, este manual esta hecho sobre una versión preliminar del programa, por lo que se pueden encontrar cambios en la versión final de la aplicación. Sin embargo, esta es la escencia del programa y todo lo que sea construido sobre esto, tendrá un flujo y funcionalidades casi iguales.
 
 
 

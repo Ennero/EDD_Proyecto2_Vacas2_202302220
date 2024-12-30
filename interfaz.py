@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import Label, PhotoImage, messagebox,simpledialog,filedialog,Tk
 from tkinter import ttk
 from PIL import Image, ImageTk
-import subprocess
 import re
 from arbolito import ArbolB
 from listas import listaCircularDoble, listaSimple,nodoListaCircularDoble,nodoListaSimple
@@ -22,7 +21,6 @@ tabla=None
 
 #Declarando mis variables globales
 rutaGrafica:str="C:/banderas/nono.png"
-usuarios:str=""
 
 #Botones inútiles -----------------------------------------------------------------------------------------------------------
 def acerca_de(): #Función para mostrar la información del autor (la mia)
@@ -254,7 +252,6 @@ def crearViaje():
         messagebox.showinfo("Creación de viaje", "Viaje creado correctamente.")
     #Creo la instancia del viaje
     
-
 #Fin de funciones para crear--------------------------------------------------------------
 
 #Funciones para eliminar----------------------------------------------------------------
@@ -534,7 +531,7 @@ def actualizarTabla(columnas, valores_func):
     #Configuro cabeceras
     for col in columnas:
         tabla.heading(col, text=col)
-        tabla.column(col, width=88)
+        tabla.column(col, width=82)
     
     #Inserto los valores
     aux = viajes.getInicio()
@@ -560,7 +557,7 @@ def actualizarTabla(columnas, valores_func):
     tabla.pack(side="left", fill="both", expand=True)
     scrollbar.pack(side="right", fill="y")
 
-
+#----------------------------------------------------------------------------------
 def eliminarTablita():
     global tabla
     if tabla is not None:

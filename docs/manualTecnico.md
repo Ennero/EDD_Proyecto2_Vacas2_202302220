@@ -1108,7 +1108,692 @@ def buscar(self, origen:str):
         
         grafica.render(view=True)
 ```
+### Interfaz Gráfica
+#### Importaciones
+- tkinter: Interfaz gráfica.
+-Submódulos de tkinter: Label, PhotoImage, messagebox, simpledialog, filedialog, Tk, ttk (para la tabla).
+- PIL (Pillow): Manejo de imágenes.
+- re: Expresiones regulares.
+- Módulos personalizados: arbolito (Árbol B), listas (listas enlazadas), clases (clases Cliente, Vehiculo, Viaje), ListaAdyacente (grafo con lista de adyacencia).
+- datetime: Manejo de fechas y horas.
+```python
+import tkinter as tk
+from tkinter import Label, PhotoImage, messagebox,simpledialog,filedialog,Tk
+from tkinter import ttk
+from PIL import Image, ImageTk
+import re
+from arbolito import ArbolB
+from listas import listaCircularDoble, listaSimple,nodoListaCircularDoble,nodoListaSimple
+import clases
+from ListaAdyacente import ListaAdyacente,NodoListaAdyacente,NodoRuta
+from datetime import datetime
+```
+#### Incialización de variables globales
+- vehículos: ArbolB = ArbolB(5): Árbol B para vehículos.
+- clientes: listaCircularDoble = listaCircularDoble(): Lista circular doblemente enlazada para clientes.
+- viajes: listaSimple = listaSimple(): Lista simplemente enlazada para viajes.
+- rutas: ListaAdyacente = ListaAdyacente(): Grafo para rutas.
+- entrada1 = None, scroll1 = None, tabla = None: Variables globales para el segundo cuadro de texto, su barra de desplazamiento y la tabla.
+- rutaGrafica: str = "C:/banderas/nono.png": Ruta de la imagen del grafo.
+```python
+#Inicializo las estructuras
+vehículos: ArbolB=ArbolB(5)
+clientes: listaCircularDoble =listaCircularDoble()
+viajes: listaSimple = listaSimple()
+rutas: ListaAdyacente=ListaAdyacente()
 
+entrada1=None
+scroll1=None
+tabla=None
+
+#Declarando mis variables globales
+rutaGrafica:str="C:/banderas/nono.png"
+```
+#### Funciones auxiliares
+- acerca_de(): Muestra información del autor.
+- limpiar(): Limpia los campos de texto y la tabla.
+```python
+#Botones inútiles -----------------------------------------------------------------------------------------------------------
+def acerca_de(): #Función para mostrar la información del autor (la mia)
+    messagebox.showinfo("Acerca de","Nombre: Enner Esaí Mendizabal Castro\nCarné: 202302220\nCurso: Estructura de Datos\nSección: A")
+
+def limpiar():
+    entrada.config(state=tk.NORMAL)
+    entrada.delete(1.0, tk.END)
+    entrada.config(state=tk.DISABLED)
+
+    #Limpio la segunda entrada
+    if entrada1!=None:
+        entrada1.config(state=tk.NORMAL)
+        entrada1.delete(1.0, tk.END)
+        entrada1.config(state=tk.DISABLED)
+    #Limpio la tabla
+    eliminarTablita()
+#Fin de botones inútiles-----------------------------------------------------------------------------------------------------
+ 
+```
+- regenerarEntrada1(): Recrea el segundo cuadro de texto (entrada1). Debe ser un método de clase.
+```python
+def regenerarEntrada1():
+    global entrada1, scroll1,tabla
+    # Segunda entrada con scroll
+    eliminarTablita()
+    eliminarSegundaEntrada()
+
+    scroll1 = tk.Scrollbar(fram33, orient="vertical")
+    scroll1.pack(side="right", fill="y")
+
+    entrada1 = tk.Text(fram33, height=11, width=75, yscrollcommand=scroll1.set)
+    entrada1.pack(side="bottom", fill="both", expand=True)
+    scroll1.config(command=entrada1.yview)
+    entrada1.config(font=("consolas", 10), state=tk.DISABLED)
+```
+- eliminarTablita(): Elimina la tabla.
+- eliminarSegundaEntrada(): Elimina el segundo cuadro de texto y su scrollbar.
+```python
+def eliminarTablita():
+    global tabla
+    if tabla is not None:
+        for widget in tabla.winfo_children():
+            if isinstance(widget, ttk.Treeview):
+                widget.destroy()
+        tabla.destroy()
+        tabla = None
+
+def eliminarSegundaEntrada():
+    global entrada1, scroll1
+    if entrada1!=None:
+        entrada1.destroy()
+        entrada1=None
+    if scroll1!=None:
+        scroll1.destroy()
+        scroll1=None
+    
+    for widget in fram33.winfo_children():
+        if isinstance(widget, ttk.Scrollbar):
+            widget.destroy()
+```
+#### Funciones de carga masiva
+
+- cargarRutas(): Carga rutas desde un archivo, crea el grafo, genera la imagen y la muestra.
+```python
+def cargarRutas():
+    global rutas,rutaGrafica
+    info.config(text="Cargando rutas...", foreground="black", font=("Arial", 9, "italic"))
+    ruta=filedialog.askopenfilename(title="Cargar Rutas", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
+    if ruta!="":
+        try:
+            with open(ruta, "r", encoding="utf-8") as archivo: #Abro el archivo
+                rutongas=archivo.read() #Leo el archivo y lo paso a string
+        except FileNotFoundError:
+            messagebox.showerror("Error", "El archivo no se encontró o no se pudo abrir.")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo abrir el archivo: {str(e)}")
+        #                Origen      Destino       100
+        patroRutas = r'\s*(.+)\s*/\s*(.+)\s*/\s*(\d+)\s*' #Patrón para las rutas
+
+        #Ciclo para ir separando las rutas
+        rutitas=rutongas.split('%')
+        print("Se hizo split------------------------------------")
+        for ruta in rutitas:
+            datos=re.search(patroRutas, ruta)
+            if datos:
+                #Ingreso los valores del grupo dentro de variables
+                origen=(datos.group(1)).rstrip()
+                destino=datos.group(2).rstrip()
+                tiempo=float(datos.group(3))
+                if origen==None or destino==None or tiempo==None:
+                    #Solo es para trabajar con el último
+                    print("No se pudo ingresar la ruta") 
+                else:
+                    rutas.insertarRuta(origen, destino, tiempo)
+                    print(origen, destino, tiempo)
+
+        rutas.generarGrafo()
+        rutaGrafica="Rutas.png"
+
+        graficaImg=Image.open(rutaGrafica) #Actualizo la gráfica
+        redimencionada=graficaImg.resize((680, 500), Image.Resampling.LANCZOS)
+        grafiquita=ImageTk.PhotoImage(redimencionada)
+        gra.config(image=grafiquita)
+        gra.image=grafiquita
+        gra.pack(anchor="e")
+
+        #Aquí destruyo el botón para cargar rutas porque ya no lo voy a volver a usar
+        botonRutas.destroy()
+        
+        #Aquí solo confirmo que se hizo bien
+        info.config(text="Rutas cargadas correctamente", foreground="green", font=("Arial", 9, "italic"))
+        messagebox.showinfo("Carga de rutas", "Rutas cargadas correctamente.")
+    else:
+        print("No se pudo abrir el archivo")
+        messagebox.showerror("Error", "No se pudo abrir el archivo.")
+        info.config(text="Error al cargar rutas", foreground="red", font=("Arial", 9, "italic"))
+```
+
+- cargaMasivaClientes(): Carga clientes desde un archivo.
+- cargaMasivaVehículos(): Carga vehículos desde un archivo.
+```python
+#Funciones de carga masiva de datos-----------------------------------------------------------------------------------------------------------
+#Función para la carga masiva de clientes
+def cargaMasivaClientes():
+    global clientes
+    info.config(text="Cargando clientes...", foreground="black", font=("Arial", 9, "italic"))
+    ruta=filedialog.askopenfilename(title="Cargar Clientes", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
+    if ruta!="":
+        try:
+            with open(ruta, "r", encoding="utf-8") as archivo: #Abro el archivo
+                usuarios=archivo.read() #Leo el archivo y lo paso a string
+
+        except FileNotFoundError:
+            messagebox.showerror("Error", "El archivo no se encontró o no se pudo abrir.")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo abrir el archivo: {str(e)}")
+        #                1234567879012,  Nombre1,    Nombre2       Apellido1   Apellido2      Genero     44456654   2da calle 25-50 zona 1;
+        patronUsuario=r'\s*(\d*),\s*([A-Za-z]+\s*[A-Za-z]*),\s*([A-Za-z]+\s*[A-Za-z]*),\s*([A-Za-z]+),\s*(\d*),\s*(.+)'
+
+        #Ciclo para ir separando los clientes
+        print(usuarios)
+        
+        clientesitos=usuarios.split(";")
+        print("Se hizo split------------------------------------")
+        for cliente in clientesitos:
+            print(cliente)
+            datos=re.search(patronUsuario, cliente)
+            if datos:
+                print(f"Usuario: {datos.group(1)} {datos.group(2)} {datos.group(3)} {datos.group(4)} {datos.group(5)} {datos.group(6)}")
+                #Instancio al cliente y lo inserto en la lista circular
+                clintete:clases.Cliente=clases.Cliente(datos.group(1), datos.group(2), datos.group(3), datos.group(4), datos.group(5), datos.group(6))
+                clientes.insertar(clintete)
+        info.config(text="Clientes cargados correctamente", foreground="green", font=("Arial", 9, "italic"))
+    else:
+        print("No se pudo abrir el archivo")
+        messagebox.showerror("Error", "No se pudo abrir el archivo.")
+        info.config(text="Error al cargar clientes", foreground="red", font=("Arial", 9, "italic"))
+
+#Función para la carga masiva de vehículos
+def cargaMasivaVehículos():
+    global vehículos
+    info.config(text="Cargando vehículos...", foreground="black", font=("Arial", 9, "italic"))
+    ruta=filedialog.askopenfilename(title="Cargar Vehículos", filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")))
+    if ruta!="":
+        try:
+            with open(ruta, "r", encoding="utf-8") as archivo: #Abro el archivo
+                vehiculos=archivo.read() #Leo el archivo y lo paso a string
+
+        except FileNotFoundError:
+            messagebox.showerror("Error", "El archivo no se encontró o no se pudo abrir.")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo abrir el archivo: {str(e)}")
+        #                  651CVD:    Marca:    Modelo:  precio   
+        patronVehiculo=r'\s*(.*):\s*([A-Za-z]+):\s*(.+):\s*(.+)'
+
+        #Ciclo para ir separando los clientes
+        print(vehiculos)
+        
+        vehiculitos=vehiculos.split(";")
+        print("Se hizo split------------------------------------")
+        for vehiculo in vehiculitos:
+            #print(vehiculo)
+            data=re.search(patronVehiculo, vehiculo)
+            if data:
+                print(f"Vehiculo: {data.group(1)} {data.group(2)} {data.group(3)} {data.group(4)}")
+                #Instancio al cliente y lo inserto en la lista circular
+                vehiculete:clases.Vehiculo=clases.Vehiculo(data.group(1), data.group(2), data.group(3), data.group(4))
+                vehículos.insertarValor(vehiculete)
+        info.config(text="Vehículos cargados correctamente", foreground="green", font=("Arial", 9, "italic"))
+    else:
+        print("No se pudo abrir el archivo")
+        messagebox.showerror("Error", "No se pudo abrir el archivo.")
+        info.config(text="Error al cargar vehículos", foreground="red", font=("Arial", 9, "italic"))
+#Fin de funciones para carga masiva de datos------------------------------------------------
+```
+#### Funciones de creación
+- crearCliente(): Crea un cliente.
+- crearVehículo(): Crea un vehículo.
+- crearViaje(): Crea un viaje.
+```python
+#Funciónes para crear----------------------------------------------------------------
+def crearCliente():
+    global clientes
+    info.config(text="Creando cliente...", foreground="black", font=("Arial", 9, "italic"))
+    #Solicito los datos para crear el cliente
+    nombres=simpledialog.askstring("Creación de usuario", "Ingrese los NOMBRES del Cliente:",parent=ventana)
+    dpi=simpledialog.askstring("Creación de usuario", "Ingrese el DPI del Cliente:",parent=ventana)
+    apellidos=simpledialog.askstring("Creación de usuario", "Ingrese los APELLIDOS del Cliente:",parent=ventana)
+    genero=simpledialog.askstring("Creación de usuario", "Ingrese el GÉNERO del Cliente:",parent=ventana)
+    telefono=simpledialog.askstring("Creación de usuario", "Ingrese el TELÉFONO del Cliente:",parent=ventana)
+    direccion=simpledialog.askstring("Creación de usuario", "Ingrese la DIRECCIÓN del Cliente:",parent=ventana)
+    
+    if nombres==None or dpi==None or apellidos==None or genero==None or telefono==None or direccion==None:
+        messagebox.showerror("Error", "No se pudo crear el Cliente.")
+        info.config(text="Error al crear el cliente", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        #Creo el cliente
+        donElian:clases.Cliente=clases.Cliente(dpi, nombres, apellidos, genero, telefono, direccion)
+        #Lo inserto en la lista circular
+        clientes.insertar(donElian)
+        info.config(text="Cliente creado correctamente", foreground="green", font=("Arial", 9, "italic"))
+    
+def crearVehículo():
+    global vehículos
+    info.config(text="Creando vehículo...", foreground="black", font=("Arial", 9, "italic"))
+    #Solicito los datos para crear el vehículo
+    placa=simpledialog.askstring("Creación de vehículo", "Ingrese la PLACA del vehículo:",parent=ventana)
+    marca=simpledialog.askstring("Creación de vehículo", "Ingrese la MARCA del vehículo:",parent=ventana)
+    modelo=simpledialog.askstring("Creación de vehículo", "Ingrese el MODELO del vehículo:",parent=ventana)
+    pps=simpledialog.askstring("Creación de vehículo", "Ingrese el PRECIO del vehículo:",parent=ventana)
+
+    if placa==None or marca==None or modelo==None or pps==None:
+        messagebox.showerror("Error", "No se pudo crear el vehículo.")
+        info.config(text="Error al crear el vehículo", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        #Creo el vehículo
+        carriñoso:clases.Vehiculo=clases.Vehiculo(placa, marca, modelo, pps)
+        #Lo inserto en el arbol B
+        vehículos.insertarValor(carriñoso)
+        info.config(text="Vehículo creado correctamente", foreground="green", font=("Arial", 9, "italic"))
+        messagebox.showinfo("Creación de vehículo", "Vehículo creado correctamente.")
+
+def crearViaje():
+    global viajes,vehículos,clientes
+    info.config(text="Creando viaje...", foreground="black", font=("Arial", 9, "italic"))
+    #Muestro los clientes y los vehículos
+    mostrarClientes()
+    mostrarVehículos()
+
+
+    #Solicito los datos para crear el viaje
+    dpi=simpledialog.askstring("Creación de viaje", "Ingrese el DPI del cliente:",parent=ventana)
+    placa=simpledialog.askstring("Creación de viaje", "Ingrese la PLACA del vehículo:",parent=ventana)
+    origen=simpledialog.askstring("Creación de viaje", "Ingrese el ORIGEN del viaje:",parent=ventana)
+    destino=simpledialog.askstring("Creación de viaje", "Ingrese el DESTINO del viaje:",parent=ventana)
+
+
+    if dpi==None or placa==None or origen==None or destino==None:
+        messagebox.showerror("Error", "No se pudo crear el viaje.")
+        info.config(text="Error al crear el viaje", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        #Creo el viaje
+
+        #Aumento el contador de los viajes de cada auto y de cada cliente
+        clientecito=clientes.encontrarCliente(dpi)
+        clientecito.getValor().setViajes(clientecito.getValor().getViajes()+1)
+        vehiculito=vehículos.buscarValor(placa)
+        vehiculito.setViajes(vehiculito.getViajes()+1)
+
+        #Busco la ruta más corta
+        pasos,tiempoRuta=rutas.encontrarRutaCorta(origen, destino)
+        fechaActual=datetime.now()
+        fechaFormateada=fechaActual.strftime("%d/%m/%Y %H:%M")
+        
+        #Creo el viaje
+        viajecito:clases.Viaje=clases.Viaje(origen, destino,fechaFormateada, clientecito.getValor(), vehiculito, pasos, tiempoRuta)
+        viajes.insertar(viajecito)
+
+        info.config(text="Viaje creado correctamente", foreground="green", font=("Arial", 9, "italic"))
+        messagebox.showinfo("Creación de viaje", "Viaje creado correctamente.")
+    #Creo la instancia del viaje
+    
+#Fin de funciones para crear--------------------------------------------------------------
+
+```
+#### Funciones de eliminación
+- eliminarCliente(): Elimina un cliente.
+- eliminarVehículo(): Elimina un vehículo.
+```python
+#Funciones para eliminar----------------------------------------------------------------
+def eliminarCliente():
+    global clientes
+    mostrarClientes()
+    if clientes.getTamano==0:
+        messagebox.showerror("Error", "No hay clientes para eliminar.")
+        info.config(text="Error al eliminar el cliente", foreground="red", font=("Arial", 9, "italic"))
+        return
+    dpi=simpledialog.askstring("Eliminación de cliente", "Ingrese el DPI del cliente a eliminar:",parent=ventana)
+    if dpi==None:
+        messagebox.showerror("Error", "No se pudo eliminar el cliente.")
+        info.config(text="Error al eliminar el cliente", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        clientes.eliminarCliente(dpi)
+        lucas:nodoListaCircularDoble=clientes.encontrarCliente(dpi)
+        if lucas==None:
+            messagebox.showerror("Error", "No se encontró el cliente.")
+            info.config(text="Cliente no encontrado", foreground="red", font=("Arial", 9, "italic"))
+            return
+        info.config(text="Cliente eliminado correctamente", foreground="green", font=("Arial", 9, "italic"))
+        messagebox.showinfo("Eliminación de cliente", "Cliente eliminado correctamente.")
+
+def eliminarVehículo():
+    global vehículos
+    mostrarVehículos()
+    if vehículos.raiz==None:
+        messagebox.showerror("Error", "No hay vehículos para eliminar.")
+        info.config(text="Error al eliminar el vehículo", foreground="red", font=("Arial", 9, "italic"))
+        return
+    
+
+#Fin de funciones para eliminar------------------------------------------------------------
+```
+#### Funciones de Modificación
+- modificarCliente(): Modifica un cliente.
+- modificarVehículo(): Modifica un vehículo.
+```python
+#Funciones para modificar----------------------------------------------------------------
+def modificarCliente():
+    global clientes
+    mostrarClientes()
+    #Si es que no tiene nada
+    if clientes.getTamano==0:
+        messagebox.showerror("Error", "No hay clientes para modificar.")
+        info.config(text="Error al modificar el cliente", foreground="red", font=("Arial", 9, "italic"))
+        return
+    #Si sí entonces sigo :)
+    dpi=simpledialog.askstring("Modificación de cliente", "Ingrese el DPI del cliente a modificar:")
+    if dpi==None:
+        messagebox.showerror("Error", "No se pudo modificar el cliente.")
+        info.config(text="Error al modificar el cliente", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        lucas:nodoListaCircularDoble=clientes.encontrarCliente(dpi)
+        if lucas==None:
+            messagebox.showerror("Error", "No se encontró el cliente.")
+            info.config(text="Cliente no encontrado", foreground="red", font=("Arial", 9, "italic"))
+            return
+        nombres=simpledialog.askstring("Modificación de cliente", "Ingrese los NOMBRES del Cliente:",parent=ventana)
+        apellidos=simpledialog.askstring("Modificación de cliente", "Ingrese los APELLIDOS del Cliente:",parent=ventana)
+        genero=simpledialog.askstring("Modificación de cliente", "Ingrese el GÉNERO del Cliente:",parent=ventana)
+        telefono=simpledialog.askstring("Modificación de cliente", "Ingrese el TELÉFONO del Cliente:",parent=ventana)
+        direccion=simpledialog.askstring("Modificación de cliente", "Ingrese la DIRECCIÓN del Cliente:",parent=ventana)
+        if nombres==None or apellidos==None or genero==None or telefono==None or direccion==None:
+            messagebox.showerror("Error", "No se pudo modificar el Cliente.")
+            info.config(text="Error al modificar el cliente", foreground="red", font=("Arial", 9, "italic"))
+            return
+        else:
+            #Modifico el cliente
+            clientes.modificarCliente(dpi, nombres, apellidos, genero, telefono, direccion)
+            info.config(text="Cliente modificado correctamente", foreground="green", font=("Arial", 9, "italic"))
+            messagebox.showinfo("Modificación de cliente", "Cliente modificado correctamente.")
+
+def modificarVehículo():
+    global vehículos
+    mostrarVehículos()
+    if vehículos.raiz==None:
+        messagebox.showerror("Error", "No hay vehículos para modificar.")
+        info.config(text="Error al modificar el vehículo", foreground="red", font=("Arial", 9, "italic"))
+        return
+    placa=simpledialog.askstring("Modificación de vehículo", "Ingrese la PLACA del vehículo a modificar:")
+    if placa==None:
+        messagebox.showerror("Error", "No se pudo modificar el vehículo.")
+        info.config(text="Vehículo no encontrado", foreground="red", font=("Arial", 9, "italic"))
+        return
+    marca=simpledialog.askstring("Modificación de vehículo", "Ingrese la MARCA del vehículo:",parent=ventana)
+    modelo=simpledialog.askstring("Modificación de vehículo", "Ingrese el MODELO del vehículo:",parent=ventana)
+    pps=simpledialog.askstring("Modificación de vehículo", "Ingrese el PRECIO del vehículo:",parent=ventana)
+    if marca==None or modelo==None or pps==None:
+        messagebox.showerror("Error", "No se pudo modificar el vehículo.")
+        info.config(text="Error al modificar el vehículo", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        #Modifico el vehículo
+        vehículos.modificarValor(placa, marca, modelo, pps)
+        info.config(text="Vehículo modificado correctamente", foreground="green", font=("Arial", 9, "italic"))
+        messagebox.showinfo("Modificación de vehículo", "Vehículo modificado correctamente.")
+
+#Fin de funciones para modificar------------------------------------------------------------
+```
+#### Funciones para mostrar Información
+- mostrarClientes(): Muestra clientes en entrada.
+- mostrarVehículos(): Muestra vehículos en entrada1.
+- mostrarViajes(): Muestra viajes en entrada.
+```python
+#Funciones para mostrar información-------------------------------------------------------
+def mostrarClientes():
+    global clientes
+    info.config(text="Mostrando clientes...", foreground="black", font=("Arial", 9, "italic"))
+    mostrar:str=""
+    mostrar=clientes.stringClientes()
+    entrada.config(state=tk.NORMAL)
+    entrada.delete(1.0, tk.END)
+    entrada.insert(tk.END, mostrar)
+    print(mostrar)
+    entrada.config(state=tk.DISABLED)
+
+def mostrarVehículos():
+    global vehículos, entrada1, scroll1
+    regenerarEntrada1()
+    info.config(text="Mostrando vehículos...", foreground="black", font=("Arial", 9, "italic"))
+    mostrar:str=""
+    mostrar=vehículos.stringVehiculos()
+    entrada1.config(state=tk.NORMAL)
+    entrada1.delete(1.0, tk.END)
+    entrada1.insert(tk.END, mostrar)
+    print(mostrar)
+    entrada1.config(state=tk.DISABLED)
+
+def mostrarViajes():
+    global viajes
+    info.config(text="Mostrando viajes...", foreground="black", font=("Arial", 9, "italic"))
+    mostrar:str=""
+
+    #Ordeno los viajes por ID por si se desordenaron
+    viajes.ordenarPorID()
+    #Ante de todo limpio ambos para no confudirme
+    limpiar()
+    mostrar=viajes.stringViajes()
+    entrada.config(state=tk.NORMAL)
+    entrada.delete(1.0, tk.END)
+    entrada.insert(tk.END, mostrar)
+    print(mostrar)
+    entrada.config(state=tk.DISABLED)
+#Fin de funciones para mostrar información------------------------------------------------
+```
+- mostrarInfoPorID(): Muestra información detallada de un viaje por su ID.
+```python
+#Función para mostrar información por id de los viajes
+def mostrarInfoPorID():
+    global viajes
+    mostrarViajes()
+    info.config(text="Solicitando id", foreground="black", font=("Arial", 9, "italic"))
+    id=simpledialog.askstring("Información de viaje por Id", "Ingrese el ID del viaje:",parent=ventana)
+    if id==None:
+        messagebox.showerror("Error", "No se pudo mostrar la información del viaje.")
+        info.config(text="Error al mostrar la información del viaje", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        #Busco el viaje
+        viaje:clases.Viaje=viajes.encontrar(int(id))
+        if viaje==None:
+            messagebox.showerror("Error", "No se encontró el viaje.")
+            info.config(text="Viaje no encontrado", foreground="red", font=("Arial", 9, "italic"))
+            return
+        else:
+            #Muestro la información del viaje
+            messagebox.showinfo("Información de viaje "+str(viaje.getId()), f"ID: {str(viaje.getId())}\nOrigen: {viaje.getOrigen()}\nDestino: {viaje.getDestino()}\nFecha: {viaje.getFechaHoraInicio()}\nCliente: {viaje.getCliente().getNombre()} {viaje.getCliente().getApellido()}\nVehículo: {viaje.getVehiculo().getPlaca()}\nTiempo: {str(viaje.getTiempoRuta())}")
+```
+
+#### Funciones para reportes
+- actualizarTabla(columnas, valores_func): Actualiza la tabla con datos.
+```python
+#Generación de tabla :)---------------------------------------------------------------------
+
+def actualizarTabla(columnas, valores_func):
+    global tabla, fram33, entrada1, scroll1
+
+    #Primero elimino la tabla y la entrada si es que existen
+    eliminarTablita()
+    eliminarSegundaEntrada()
+    
+    #Creo la nueva tabla
+    tabla = ttk.Treeview(fram33, columns=columnas, show="headings")
+    #tabla.column(col, width=100)
+
+    #nueva scrollbar
+    scrollbar = ttk.Scrollbar(fram33, orient="vertical", command=tabla.yview)
+    tabla.configure(yscrollcommand=scrollbar.set)
+
+    #Configuro cabeceras
+    for col in columnas:
+        tabla.heading(col, text=col)
+        tabla.column(col, width=88)
+    
+    #Inserto los valores
+    aux = viajes.getInicio()
+    contador = 0
+    auxi = None
+    prevalores=None
+    valores=None
+    while aux and contador < 5:
+        if auxi == aux:
+            contador -= 1
+        else:
+            valores = valores_func(aux)
+            if valores != prevalores:
+                tabla.insert("", tk.END, values=valores)
+            else:
+                contador -= 1
+        auxi = aux
+        aux = aux.getSiguiente()
+        prevalores = valores
+        contador += 1
+
+    
+    tabla.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+```
+- topVehiculos(): Reporte de vehículos con más viajes.
+- topClientes(): Reporte de clientes con más viajes.
+- topGanancias(): Reporte de viajes por ganancias.
+- topViajesLargos(): Reporte de viajes más largos.
+```python
+def topVehiculos():
+    global viajes
+    viajes.ordenarPorVehiculos()
+    
+    columnas = ("Viajes", "Placa", "Marca", "Modelo", "Precio")
+    def obtener_valores(aux):
+        vehiculo = aux.getValor().getVehiculo()
+        return (str(vehiculo.getViajes()), vehiculo.getPlaca(), 
+                vehiculo.getMarca(), vehiculo.getModelo(), vehiculo.getPPS())
+    
+    actualizarTabla(columnas, obtener_valores)
+
+def topClientes():
+    global viajes
+    viajes.ordenarPorClientes()
+    
+    columnas = ("Viajes", "DPI", "nombreCliente", "Genero")
+    def obtener_valores(aux):
+        cliente = aux.getValor().getCliente()
+
+
+
+
+        return (cliente.getViajes(), cliente.getDPI(),
+                f"{cliente.getNombre()} {cliente.getApellido()}", 
+                cliente.getGenero())
+    
+    actualizarTabla(columnas, obtener_valores)
+
+def topGanancias():
+    global viajes
+    viajes.ordenarPorGanancias()
+    
+    columnas = ("Ganancias","Precio Vehiculo", "tiempo", "id", "origen", "destino", "vehículo")
+    def obtener_valores(aux):
+        valor = aux.getValor()
+        return (str(float(valor.getTiempoRuta()) * float(valor.getVehiculo().getPPS())),str(valor.getVehiculo().getPPS()),
+                valor.getTiempoRuta(),valor.getId(), valor.getOrigen(), valor.getDestino(), 
+                valor.getVehiculo().getPlaca())
+    
+    actualizarTabla(columnas, obtener_valores)
+
+def topViajesLargos():
+    global viajes
+    viajes.ordenarPorLargo()
+    
+    columnas = ("Destinos", "id", "origen", "destino", "tiempo", "cliente", "vehículo")
+    def obtener_valores(aux):
+        valor = aux.getValor()
+        return (str(valor.getPasos().tamano), valor.getId(), 
+                valor.getOrigen(), valor.getDestino(), valor.getTiempoRuta(),
+                valor.getCliente().getNombre(), valor.getVehiculo().getPlaca())
+    
+    actualizarTabla(columnas, obtener_valores)
+#Fin de funcinoes para reportes----------------------------------------------------------------
+```
+- rutaDeUnViaje(): Visualiza la ruta de un viaje específico.
+```python
+def rutaDeUnViaje():
+    global viajes
+    info.config(text="Mostrando ruta de un viaje...", foreground="black", font=("Arial", 9, "italic"))
+    mostrarViajes()
+    #Solicito el id del viaje
+    id=simpledialog.askstring("Ruta de un viaje", "Ingrese el ID del viaje:",parent=ventana)
+    if id==None:
+        messagebox.showerror("Error", "No se pudo mostrar la ruta del viaje.")
+        info.config(text="Error al mostrar la ruta del viaje", foreground="red", font=("Arial", 9, "italic"))
+        return
+    else:
+        #Busco el viaje
+        viaje:clases.Viaje=viajes.encontrar(int(id))
+        if viaje==None:
+            messagebox.showerror("Error", "No se encontró el viaje.")
+            info.config(text="Viaje no encontrado", foreground="red", font=("Arial", 9, "italic"))
+            return
+        else:
+            #Muestro la ruta del viaje
+            origen=viaje.origen
+            destino=viaje.destino
+            rutas.visualizar_recorrido_lista(origen, destino)
+            info.config(text="Ruta del viaje mostrada correctamente", foreground="green", font=("Arial", 9, "italic"))
+```
+
+#### Funciones para mostrar estructuras de clientes
+- estructuraClientes(): Genera gráfica de la estructura de clientes.
+- estructuraVehículos(): Genera gráfica de la - estructura de vehículos.
+- estructuraViajes(): Genera gráfica de la estructura de viajes.
+```python
+#Funciones para mostrar estructura de datos------------------------------------------------
+def estructuraClientes():
+    global clientes
+    info.config(text="Mostrando estructura de datos de clientes...", foreground="black", font=("Arial", 9, "italic"))
+    clientes.generarEstructura()
+
+def estructuraVehículos():
+    global vehículos
+    info.config(text="Mostrando estructura de datos de vehículos...", foreground="black", font=("Arial", 9, "italic"))
+    vehículos.generarEstructura()
+
+def estructuraViajes():
+    global viajes
+    info.config(text="Mostrando estructura de datos de viajes...", foreground="black", font=("Arial", 9, "italic"))
+    viajes.generarEstructura()
+
+#Fin de funciones para mostrar estructura de datos------------------------------------------
+```
+#### Interfaz gráfica con tkinter
+La interfaz gráfica se creó con tkinet y se colocó todo dentro de una ventana principal llamada *ventana*.
+##### Frames
+Se usaron frames para organizar de mejor manera el contenido dentro de la ventana
+- frame10: Título principal.
+- frame11: Contenedor inferior para los menús de Clientes, Vehículos, Viajes y Reportes.
+- frame1: Visualización del grafo de rutas (lado izquierdo).
+- frame2: Áreas de texto y tabla (lado derecho).
+- frame3, frame4, frame5, frame6: Contenedores para los botones de Clientes, Vehículos, Viajes y Reportes, respectivamente.
+##### Widgets
+En la ventana se colcoaron los siguientes widgets:
+- Label: Títulos, mensajes, imagen del grafo.
+- Button: Para las acciones.
+- Text: Para mostrar información.
+- Scrollbar: Para los cuadros de texto.
+- Treeview: Para los reportes en forma de tabla.
+
+Esto es todo por parte del programa, alguna lógica, funcionalidad o estética de este podría cambiar en la versión final, pero lo descrito en este manual es la escencia y la base toda la aplicación.
 
 
 
