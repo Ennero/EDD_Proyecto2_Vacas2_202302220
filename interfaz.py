@@ -221,7 +221,20 @@ def crearViaje():
 
     #Solicito los datos para crear el viaje
     dpi=simpledialog.askstring("Creación de viaje", "Ingrese el DPI del cliente:",parent=ventana)
+    clientelo=clientes.encontrarCliente(dpi)
+    if clientelo==None:
+        messagebox.showerror("Error", "No se encontró el cliente.")
+        info.config(text="Cliente no encontrado", foreground="red", font=("Arial", 9, "italic"))
+        return
     placa=simpledialog.askstring("Creación de viaje", "Ingrese la PLACA del vehículo:",parent=ventana)
+
+    plaquela=vehículos.buscarValor(placa)
+    if plaquela==None:
+        messagebox.showerror("Error", "No se encontró el vehículo.")
+        info.config(text="Vehículo no encontrado", foreground="red", font=("Arial", 9, "italic"))
+        return
+    
+    #Por fe se ponen bien los viajes xd
     origen=simpledialog.askstring("Creación de viaje", "Ingrese el ORIGEN del viaje:",parent=ventana)
     destino=simpledialog.askstring("Creación de viaje", "Ingrese el DESTINO del viaje:",parent=ventana)
 
@@ -772,7 +785,6 @@ frameizquierdo1.pack(side="left")
 framederecho1=tk.Frame(frame4)
 framederecho1.pack(side="right")
 
-
 #Creación del botón para Crear
 nuevo = tk.Button(frameizquierdo1, text="Crear", height="1", width="11", command=crearVehículo)
 nuevo.pack()
@@ -781,7 +793,7 @@ nuevo.config(background="white", foreground="black", font=("Arial", 10, "bold"))
 #Creación del botón para Eliminar
 abrir = tk.Button(frameizquierdo1, text="Eliminar", height="1", width="11", command=eliminarVehículo)
 abrir.pack()
-abrir.config(background="white", foreground="black", font=("Arial", 10, "bold"))
+abrir.config(background="white", foreground="black", font=("Arial", 10, "bold"),state=tk.DISABLED) #Desactivado por ahora
 
 #Creación del botón para Mostrar Información
 guardo = tk.Button(framederecho1, text="Mostrar Información", height="1", width="22", command=mostrarVehículos)
@@ -852,17 +864,6 @@ topoVehiculos.config(background="white", foreground="black", font=("Arial", 10, 
 viajeEspecifico = tk.Button(contenedorReportes, text="Ruta de un Viaje", height="1", width="22", command=rutaDeUnViaje)
 viajeEspecifico.pack()
 viajeEspecifico.config(background="white", foreground="black", font=("Arial", 10, "bold"))
-
-
-
-
-
-
-
-
-
-
-
 
 #----------------------------------------------------------------------------
 #FIN DE LA PARTE DE ABAJO--------------------------------------------------------------------------------------------------------------------------

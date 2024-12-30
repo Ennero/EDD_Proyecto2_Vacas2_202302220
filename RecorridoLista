@@ -1,19 +1,10 @@
 digraph RecorridoLista {
 	rankdir=LR
 	node [color=lightsalmon shape=box style=filled]
-	nodo_0 [label="Vigo
+	nodo_0 [label="Zaragoza
 Distancia recorrida: 0"]
-	nodo_1 [label="Valladolid
-Distancia recorrida: 356.0"]
-	nodo_0 -> nodo_1
-	nodo_2 [label="Madrid
-Distancia recorrida: 356.0+193.0=549.0"]
-	nodo_1 -> nodo_2
-	nodo_3 [label="Albacete
-Distancia recorrida: 549.0+251.0=800.0"]
-	nodo_2 -> nodo_3
-	nodo_4 [label="Murcia
+	nodo_1 [label="Bilbao
 Distancia recorrida: 
-800.0 + 150.0 = 950.0"]
-	nodo_3 -> nodo_4
+0 + 324.0 = 324.0"]
+	nodo_0 -> nodo_1
 }
