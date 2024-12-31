@@ -3,6 +3,8 @@ rankdir=LR;node [shape=record, style=filled, fillcolor=salmon, margin=0.2];
 edge [style=solid, color=red];
 graph [ranksep=1.5, nodesep=1];
 graph [label="", fontsize=20, fontcolor=black];
+"1" [label="{DPI: 1\lNombres: calificacion1\lApellidos: 23323232\lGenero: fksdjfl\lTeléfono: 323232\lDirección: 23rc2r  3\l}}"];
+"1" -> "3000853700101"[dir=both];
 "3000853700101" [label="{DPI: 3000853700101\lNombres: Elian\lApellidos: Estrada\lGenero: M\lTeléfono: 35384675\lDirección: Villa Nueva Guatemala\l}}"];
 "3000853700101" -> "3000853700102"[dir=both];
 "3000853700102" [label="{DPI: 3000853700102\lNombres: Leila\lApellidos: Gomez\lGenero: F\lTeléfono: 41538432\lDirección: Guatemala Guatemala\l}}"];
@@ -92,5 +94,5 @@ graph [label="", fontsize=20, fontcolor=black];
 "3001853700101" [label="{DPI: 3001853700101\lNombres: Hernaldo\lApellidos: Juarez\lGenero: M\lTeléfono: 41598434\lDirección: Zona 13 de Mixco Guatemala\l}}"];
 "3001853700101" -> "3002853700101"[dir=both];
 "3002853700101" [label="{DPI: 3002853700101\lNombres: Luis\lApellidos: Filomeno\lGenero: M\lTeléfono: 41138434\lDirección: Zona 14 de Mixco Guatemala\l}}"];
-"3002853700101" -> "3000853700101"[dir=both];
+"3002853700101" -> "1"[dir=both];
 }
