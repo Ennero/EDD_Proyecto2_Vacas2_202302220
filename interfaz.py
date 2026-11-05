@@ -1,3 +1,4 @@
+from pathlib import Path
 import tkinter as tk
 from tkinter import Label, PhotoImage, messagebox,simpledialog,filedialog,Tk
 from tkinter import ttk
@@ -20,7 +21,7 @@ scroll1=None
 tabla=None
 
 #Declarando mis variables globales
-rutaGrafica:str="C:/banderas/nono.png"
+rutaGrafica: str = str(Path(__file__).resolve().parent / "Rutas.png")
 
 #Botones inútiles -----------------------------------------------------------------------------------------------------------
 def acerca_de(): #Función para mostrar la información del autor (la mia)
@@ -668,7 +669,7 @@ edittxt.config(foreground="black", font=("Arial", 14, "bold"))
 
 #Imagen de la grafica
 #Le coloco un path a la grafica
-imagen_original = Image.open(rutaGrafica)
+imagen_original = Image.open(rutaGrafica) if Path(rutaGrafica).is_file() else Image.new("RGB", (550, 400), "white")
 imagen_redimensionada = imagen_original.resize((550, 400), Image.Resampling.LANCZOS)  # Redimensionar a 600x400
 graficaImg = ImageTk.PhotoImage(imagen_redimensionada)
 
